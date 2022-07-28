@@ -604,7 +604,11 @@ static cell_t SetProxy(IPluginContext* pContext, const cell_t* params)
 	char* proxy;
 	pContext->LocalToString(params[2], &proxy);
 
-	// proxy can be empty
+	if (proxy[0] == '\0')
+	{
+		return pContext->ThrowNativeError("Proxy Url cannot be empty.");
+	}
+
 	request->SetProxy(proxy);
 	
 	return 1;
