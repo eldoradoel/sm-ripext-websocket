@@ -593,6 +593,23 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t SetProxy(IPluginContext* pContext, const cell_t* params)
+{
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
+	{
+		return 0;
+	}
+
+	char* proxy;
+	pContext->LocalToString(params[2], &proxy);
+
+	// proxy can be empty
+	request->SetProxy(proxy);
+	
+	return 1;
+}
+
 static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -1056,6 +1073,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPRequest.AppendQueryParam",	AppendRequestQueryParam},
 	{"HTTPRequest.SetBasicAuth",		SetRequestBasicAuth},
 	{"HTTPRequest.SetHeader",			SetRequestHeader},
+	{"HTTPRequest.SetProxy",			SetProxy},
 	{"HTTPRequest.Get",					PerformGetRequest},
 	{"HTTPRequest.Post",				PerformPostRequest},
 	{"HTTPRequest.Put",					PerformPutRequest},

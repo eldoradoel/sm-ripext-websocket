@@ -82,10 +82,10 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 HTTPRequestContext::HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
-	bool useBasicAuth, const std::string &username, const std::string &password)
+	bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
 	: method(method), url(url), headers(headers), forward(forward), value(value),
 	connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
-	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password)
+	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {
 	if (data != NULL)
 	{
@@ -166,6 +166,10 @@ bool HTTPRequestContext::InitCurl()
 	{
 		curl_easy_setopt(curl, CURLOPT_USERNAME, username.c_str());
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
+	}
+	if (!proxy.empty())
+	{
+		curl_easy_setopt(curl, CURLOPT_PROXY, proxy.c_str());
 	}
 
 #ifdef DEBUG

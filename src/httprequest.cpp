@@ -34,7 +34,7 @@ HTTPRequest::HTTPRequest(const std::string &url)
 void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
 {
 	HTTPRequestContext *context = new HTTPRequestContext(method, BuildURL(), data, BuildHeaders(), forward, value,
-		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -45,7 +45,7 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 	SetHeader("Content-Type", "application/octet-stream");
 
 	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, value,
-		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -56,7 +56,7 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	SetHeader("Content-Type", "application/octet-stream");
 
 	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, value,
-		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -67,7 +67,7 @@ void HTTPRequest::PostForm(IChangeableForward *forward, cell_t value)
 	SetHeader("Content-Type", "application/x-www-form-urlencoded");
 
 	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders(), forward, value,
-		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -168,6 +168,11 @@ void HTTPRequest::SetBasicAuth(const char *username, const char *password)
 	this->useBasicAuth = true;
 	this->username = username;
 	this->password = password;
+}
+
+void HTTPRequest::SetProxy(const char *proxy)
+{
+	this->proxy = proxy;
 }
 
 int HTTPRequest::GetConnectTimeout() const

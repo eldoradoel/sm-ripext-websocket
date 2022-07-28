@@ -46,6 +46,7 @@ public:
 	const std::string GetUsername() const;
 	const std::string GetPassword() const;
 	void SetBasicAuth(const char *username, const char *password);
+	void SetProxy(const char *proxy);
 
 	int GetConnectTimeout() const;
 	void SetConnectTimeout(int connectTimeout);
@@ -70,6 +71,7 @@ private:
 	bool useBasicAuth = false;
 	std::string username;
 	std::string password;
+	std::string proxy;
 	int connectTimeout = 10;
 	int maxRedirects = 5;
 	int maxRecvSpeed = 0;

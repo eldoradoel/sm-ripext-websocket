@@ -30,10 +30,10 @@ static size_t IgnoreResponseBody(void *body, size_t size, size_t nmemb, void *us
 HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
-	bool useBasicAuth, const std::string &username, const std::string &password)
+	bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
 	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
 	connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
-	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password)
+	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {}
 
 HTTPFileContext::~HTTPFileContext()
@@ -103,6 +103,10 @@ bool HTTPFileContext::InitCurl()
 	{
 		curl_easy_setopt(curl, CURLOPT_USERNAME, username.c_str());
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
+	}
+	if (!proxy.empty())
+	{
+		curl_easy_setopt(curl, CURLOPT_PROXY, proxy.c_str());
 	}
 
 #ifdef DEBUG
