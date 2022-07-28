@@ -1,0 +1,6 @@
+[submodule "CxxUrl"]
+	path = CxxUrl
+	url = https://github.com/chmike/CxxUrl.git
+[submodule "sourcemod"]
+	path = sourcemod
+	url = https://github.com/alliedmodders/sourcemod.git

@@ -1,0 +1,91 @@
+# vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+libcurl = builder.Build('curl/lib/AMBuilder')
+libjansson = builder.Build('jansson/src/AMBuilder')
+libmbedtls = builder.Build('mbedtls/library/AMBuilder')
+libnghttp2 = builder.Build('nghttp2/lib/AMBuilder')
+libuv = builder.Build('libuv/src/AMBuilder')
+libz = builder.Build('zlib/AMBuilder')
+
+for cxx in builder.targets:
+  binary = Extension.Library(builder, cxx, 'rip.ext')
+  arch = binary.compiler.target.arch
+
+  binary.sources += [
+    'src/extension.cpp',
+    'src/httpclient.cpp',
+    'src/httprequest.cpp',
+    'src/httprequestcontext.cpp',
+    'src/httpfilecontext.cpp',
+    'src/httpformcontext.cpp',
+    'src/http_natives.cpp',
+    'src/json_natives.cpp',
+    'src/event_loop.cpp',
+    'src/websocket_connection.cpp',
+    'src/websocket_connection_base.cpp',
+    'src/websocket_connection_ssl.cpp',
+    'src/smn_websocket.cpp',
+    'CxxUrl/url.cpp',
+    os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
+  ]
+
+  binary.compiler.includes += [
+    os.path.join(builder.sourcePath, 'curl', 'include'),
+    os.path.join(builder.sourcePath, 'jansson', 'include'),
+    os.path.join(builder.sourcePath, 'libuv', 'include'),
+    os.path.join(builder.sourcePath, 'CxxUrl'),
+    os.path.join(builder.sourcePath, 'src'),
+  ]
+
+  if binary.compiler.target.platform == 'linux':
+    binary.compiler.includes += [
+      os.path.join(builder.sourcePath, 'windows' ,'boost'),
+    ]
+  elif binary.compiler.target.platform == 'windows':
+    binary.compiler.includes += [
+      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'include'),
+      os.path.join(builder.sourcePath, 'windows' ,'boost'),
+    ]
+
+  binary.compiler.defines += [
+    'CURL_STATICLIB',
+  ]
+
+  if binary.compiler.family == 'gcc' or binary.compiler.family == 'clang':
+    binary.compiler.cxxflags += ['-fno-rtti']
+  elif binary.compiler.family == 'msvc':
+    binary.compiler.cxxflags += ['/GR-']
+
+  binary.compiler.postlink += [
+    libcurl[arch].binary,
+    libjansson[arch].binary,
+    libmbedtls[arch].binary,
+    libnghttp2[arch].binary,
+    libuv[arch].binary,
+    libz[arch].binary,
+  ]
+
+  if binary.compiler.target.platform == 'linux':
+    binary.compiler.postlink += [
+      '-lrt',
+      os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
+      os.path.join('/usr/lib/i386-linux-gnu', 'libcrypto.a'),
+      '-static-libstdc++',
+      '-lpthread',
+      '-ldl',
+    ]
+
+  elif binary.compiler.target.platform == 'windows':
+    binary.compiler.postlink += [
+      'psapi.lib',
+      'userenv.lib',
+      'iphlpapi.lib',
+      'crypt32.lib',
+      'userenv.lib',
+      'ws2_32.lib',
+      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libssl32MT.lib'),
+      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libcrypto32MT.lib'),
+    ]
+
+  Extension.extensions += [builder.Add(binary)]
