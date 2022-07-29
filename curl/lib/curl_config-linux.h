@@ -74,7 +74,7 @@
 /* #undef CURL_DISABLE_PROGRESS_METER */
 
 /* to disable proxies */
-#define CURL_DISABLE_PROXY 1
+// #define CURL_DISABLE_PROXY 1
 
 /* to disable RTSP */
 /* #undef CURL_DISABLE_RTSP */

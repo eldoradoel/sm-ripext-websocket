@@ -79,7 +79,6 @@ for cxx in builder.targets:
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.postlink += [
       'psapi.lib',
-      'userenv.lib',
       'iphlpapi.lib',
       'crypt32.lib',
       'userenv.lib',

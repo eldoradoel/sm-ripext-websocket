@@ -46,7 +46,7 @@
 /* #undef CURL_DISABLE_POP3 */
 
 /* to disable proxies */
-#define CURL_DISABLE_PROXY 1
+// #define CURL_DISABLE_PROXY 1
 
 /* to disable RTSP */
 /* #undef CURL_DISABLE_RTSP */
