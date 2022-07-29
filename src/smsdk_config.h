@@ -32,7 +32,7 @@
 #define SMEXT_CONF_DESCRIPTION	"Provides HTTP WEBSOCKET and JSON natives for plugins"
 #define SMEXT_CONF_VERSION		"2.0.0"
 #define SMEXT_CONF_AUTHOR		"Tsunami MINIO"
-#define SMEXT_CONF_URL			"https://github.com/eldoradoel/sm-ripext"
+#define SMEXT_CONF_URL			"https://github.com/eldoradoel/sm-ripext-websocket"
 #define SMEXT_CONF_LOGTAG		"RIPEXT"
 #define SMEXT_CONF_LICENSE		"GPL"
 #define SMEXT_CONF_DATESTRING	__DATE__
