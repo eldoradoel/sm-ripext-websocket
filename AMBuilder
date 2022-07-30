@@ -14,7 +14,6 @@ for cxx in builder.targets:
 
   binary.sources += [
     'src/extension.cpp',
-    'src/httpclient.cpp',
     'src/httprequest.cpp',
     'src/httprequestcontext.cpp',
     'src/httpfilecontext.cpp',

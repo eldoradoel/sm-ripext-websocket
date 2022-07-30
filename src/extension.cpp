@@ -20,7 +20,6 @@
  */
 
 #include "extension.h"
-#include "httpclient.h"
 #include "httprequest.h"
 #include "queue.h"
 #include <atomic>
@@ -43,8 +42,6 @@ uv_timer_t g_Timeout;
 uv_async_t g_AsyncPerformRequests;
 uv_async_t g_AsyncStopLoop;
 
-HTTPClientHandler	g_HTTPClientHandler;
-HandleType_t		htHTTPClient;
 
 HTTPRequestHandler	g_HTTPRequestHandler;
 HandleType_t		htHTTPRequest;
@@ -261,7 +258,6 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	handlesys->InitAccessDefaults(NULL, &haJSON);
 	haJSON.access[HandleAccess_Delete] = 0;
 
-	htHTTPClient = handlesys->CreateType("HTTPClient", &g_HTTPClientHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
 	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, NULL, &haHTTPRequest, myself->GetIdentity(), NULL);
 	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, NULL, &haHTTPResponse, myself->GetIdentity(), NULL);
 	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, NULL, &haJSON, myself->GetIdentity(), NULL);
@@ -289,7 +285,6 @@ void RipExt::SDK_OnUnload()
 	curl_multi_cleanup(&g_Curl);
 	curl_global_cleanup();
 
-	handlesys->RemoveType(htHTTPClient, myself->GetIdentity());
 	handlesys->RemoveType(htHTTPRequest, myself->GetIdentity());
 	handlesys->RemoveType(htHTTPResponse, myself->GetIdentity());
 	handlesys->RemoveType(htJSON, myself->GetIdentity());
@@ -306,10 +301,6 @@ void RipExt::AddRequestToQueue(IHTTPContext *context)
 	g_RequestQueue.Unlock();
 }
 
-void HTTPClientHandler::OnHandleDestroy(HandleType_t type, void *object)
-{
-	delete (HTTPClient *)object;
-}
 
 void HTTPRequestHandler::OnHandleDestroy(HandleType_t type, void *object)
 {

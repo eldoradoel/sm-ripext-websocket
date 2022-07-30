@@ -201,11 +201,6 @@ private:
     static WebSocketBase *head;
 };
 
-class HTTPClientHandler : public IHandleTypeDispatch
-{
-public:
-	void OnHandleDestroy(HandleType_t type, void *object);
-};
 
 class HTTPRequestHandler : public IHandleTypeDispatch
 {
@@ -232,9 +227,6 @@ public:
 };
 
 extern RipExt g_RipExt;
-
-extern HTTPClientHandler	g_HTTPClientHandler;
-extern HandleType_t			htHTTPClient;
 
 extern HTTPRequestHandler	g_HTTPRequestHandler;
 extern HandleType_t			htHTTPRequest;
