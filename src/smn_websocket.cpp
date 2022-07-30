@@ -270,6 +270,7 @@ static cell_t native_FromURL(IPluginContext *p_context, const cell_t *params) {
 
 
 const sp_nativeinfo_t sm_websocket_natives[] = {
+    {"WebSocket.WebSocket", native_FromURL},
     {"WebSocket.Connect", native_Connect},
     {"WebSocket.SetHeader", native_SetHeader},
     {"WebSocket.Close", native_Close},

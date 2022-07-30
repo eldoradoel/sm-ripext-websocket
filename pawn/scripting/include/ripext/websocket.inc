@@ -6,6 +6,8 @@ enum WebSocket_Protocol {
 }
 
 methodmap WebSocket < Handle {
+
+    public native WebSocket(const char[] url);
     public native void SetHeader(const char[] header, const char[] value);
     public native void Connect();
     public native void Close();
