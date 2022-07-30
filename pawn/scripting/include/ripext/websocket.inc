@@ -7,6 +7,14 @@ enum WebSocket_Protocol {
 
 methodmap WebSocket < Handle {
 
+	// Creates an WebSocket request.
+	//
+	// The Handle must be freed via delete or CloseHandle().
+	//
+	// @param url        URL to the Websocket endpoint Such as [scheme]://[hostname]:[port]?[QueryParam1]&[QueryParam2].
+    //                   [scheme] Support ws or wss
+    //                   [hostname] Support Domain or IP                    
+    //                   For example ws://[hostname]:[port]?test1=1&test2=2 Or wss://[hostname]:[port]?test1=1&test2=2
     public native WebSocket(const char[] url);
     public native void SetHeader(const char[] header, const char[] value);
     public native void Connect();
