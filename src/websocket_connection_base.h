@@ -7,6 +7,9 @@
 #include "extension.h"
 #include <map>
 
+#if defined WIN32
+#include <sdkddkver.h>
+#endif
 
 namespace websocket = boost::beast::websocket;
 namespace beast = boost::beast;
