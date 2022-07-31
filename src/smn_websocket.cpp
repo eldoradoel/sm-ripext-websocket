@@ -236,7 +236,7 @@ static cell_t native_FromURL(IPluginContext *p_context, const cell_t *params) {
 
         string path(url.path());
 
-        for (auto i = 0; i < url.query().size(); i++) {
+        for (unsigned int i = 0; i < url.query().size(); i++) {
             if (i == 0) {
                 path.append("?");
             } else {

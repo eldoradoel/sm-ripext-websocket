@@ -34,6 +34,10 @@
 #include <memory>
 #include <functional>
 
+#if defined _WINDOWS
+#include <sdkddkver.h>
+#endif
+
 #define SM_RIPEXT_CA_BUNDLE_PATH "configs/ripext/ca-bundle.crt"
 #define SM_RIPEXT_USER_AGENT "sm-ripext/" SMEXT_CONF_VERSION
 
