@@ -266,6 +266,7 @@ class ExtensionConfig(object):
   def configure_windows(self, cxx):
     cxx.defines += [
       '_WINDOWS',
+      '_WIN32_WINNT=0x0601',
     ]
 
   def ConfigureForExtension(self, context, compiler):
