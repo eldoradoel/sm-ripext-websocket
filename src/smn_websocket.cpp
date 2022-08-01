@@ -65,26 +65,6 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	return json;
 }
 
-static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params) {
-    char *address, *path;
-    p_context->LocalToString(params[1], &address);
-    p_context->LocalToString(params[2], &path);
-    uint16_t port = params[3];
-    auto connection = new websocket_connection(std::string(address), std::string(path), port);
-
-    return handlesys->CreateHandle(websocket_handle_type, connection, p_context->GetIdentity(), myself->GetIdentity(), NULL);
-}
-
-static cell_t native_WebSocketSSL(IPluginContext *p_context, const cell_t *params) {
-    char *address, *path;
-    p_context->LocalToString(params[1], &address);
-    p_context->LocalToString(params[2], &path);
-    uint16_t port = params[3];
-    auto connection = new websocket_connection_ssl(std::string(address), std::string(path), port);
-
-    return handlesys->CreateHandle(websocket_handle_type, connection, p_context->GetIdentity(), myself->GetIdentity(), NULL);
-}
-
 static cell_t native_Connect(IPluginContext *p_context, const cell_t *params) {
     websocket_connection_base *connection;
     if (websocket_read_handle(params[1], p_context, &connection) != HandleError_None) {
@@ -278,8 +258,5 @@ const sp_nativeinfo_t sm_websocket_natives[] = {
     {"WebSocket.SetDisconnectCallback", native_SetDisconnectCallback},
     {"WebSocket.SetConnectCallback", native_SetConnectCallback},
     {"WebSocket.Write", native_Write},
-    {"WebSocket_FromURL", native_FromURL},
-    {"WebSocket_Create", native_WebSocket},
-    {"WebSocket_CreateSSL", native_WebSocketSSL},
     {NULL, NULL}
 };

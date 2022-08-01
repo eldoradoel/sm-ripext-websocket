@@ -24,7 +24,3 @@ methodmap WebSocket < Handle {
     public native void SetDisconnectCallback(WebSocket_ConnectCallback callback, any data=0);
     public native void Write(JSON json);
 }
-
-native WebSocket WebSocket_Create(const char[] address, const char[] path, int port=80);
-native WebSocket WebSocket_CreateSSL(const char[] address, const char[] path, int port=443);
-native WebSocket WebSocket_FromURL(const char[] url);
