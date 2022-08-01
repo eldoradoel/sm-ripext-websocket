@@ -26,9 +26,13 @@ def SetArchFlags(compiler):
   if compiler.behavior == 'gcc':
     if compiler.target.arch == 'x86_64':
       compiler.cflags += ['-fPIC']
+    else:
+      compiler.cflags += ['-fPIC']
   elif compiler.like('msvc'):
     if compiler.target.arch == 'x86_64':
       compiler.defines += ['WIN64']
+    else:
+      compiler.defines += ['WIN32']
 
 class ExtensionConfig(object):
   def __init__(self):
@@ -139,7 +143,6 @@ class ExtensionConfig(object):
       '-Wno-switch',
       '-Wno-array-bounds',
       '-msse',
-      '-m32',
       '-fvisibility=hidden',
       '-fexceptions',
     ]
@@ -150,15 +153,12 @@ class ExtensionConfig(object):
       cxx.cxxflags += ['-std=c++17']
 
     cxx.cxxflags += [
-      '-fno-exceptions',
       '-fno-threadsafe-statics',
       '-Wno-non-virtual-dtor',
       '-Wno-overloaded-virtual',
       '-fvisibility-inlines-hidden',
-      '-m32',
       '-fexceptions',
     ]
-    cxx.linkflags += ['-m32']
 
     have_gcc = cxx.family == 'gcc'
     have_clang = cxx.family == 'clang'
@@ -265,7 +265,6 @@ class ExtensionConfig(object):
 
   def configure_windows(self, cxx):
     cxx.defines += [
-      'WIN32', 
       '_WINDOWS',
     ]
 

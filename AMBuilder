@@ -35,16 +35,14 @@ for cxx in builder.targets:
     os.path.join(builder.sourcePath, 'libuv', 'include'),
     os.path.join(builder.sourcePath, 'CxxUrl'),
     os.path.join(builder.sourcePath, 'src'),
+    os.path.join(builder.sourcePath, 'windows' ,'boost'),
   ]
 
   if binary.compiler.target.platform == 'linux':
-    binary.compiler.includes += [
-      os.path.join(builder.sourcePath, 'windows' ,'boost'),
-    ]
+    binary.compiler.includes += []
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.includes += [
       os.path.join(builder.sourcePath, 'windows' ,'openssl', 'include'),
-      os.path.join(builder.sourcePath, 'windows' ,'boost'),
     ]
 
   binary.compiler.defines += [
@@ -70,9 +68,6 @@ for cxx in builder.targets:
       '-lrt',
       os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
       os.path.join('/usr/lib/i386-linux-gnu', 'libcrypto.a'),
-      '-static-libstdc++',
-      '-lpthread',
-      '-ldl',
     ]
 
   elif binary.compiler.target.platform == 'windows':
