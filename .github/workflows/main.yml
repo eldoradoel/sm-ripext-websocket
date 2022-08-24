@@ -9,19 +9,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04,ubuntu-latest,windows-2019]
+        os: [ubuntu-20.04, ubuntu-22.04,windows-2019]
         include:
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             target-archs: x86
-            os_name: ubuntu-18.04
 
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target-archs: x86
-            os_name: ubuntu-latest
 
           - os: windows-2019
             target-archs: x86
-            os_name: windows-2019
 
     steps:
       - name: Install Linux packages
@@ -65,14 +62,14 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.os_name }}
+          name: ${{ matrix.os }}
           path: extension/build/package
 
   release:
     name: Release
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Download artifacts
@@ -81,8 +78,8 @@ jobs:
       - name: Package
         run: |
           version=`echo $GITHUB_REF | sed "s/refs\/tags\///"`
-          7z a sm-ripext-${version}-ubuntu-18.04.zip ./ubuntu-18.04/*
-          7z a sm-ripext-${version}-ubuntu-latest.zip ./ubuntu-latest/*
+          7z a sm-ripext-${version}-ubuntu-20.04.zip ./ubuntu-20.04/*
+          7z a sm-ripext-${version}-ubuntu-22.04.zip ./ubuntu-22.04/*
           7z a sm-ripext-${version}-windows-2019.zip ./windows-2019/*
       - name: Release
         uses: svenstaro/upload-release-action@v2
