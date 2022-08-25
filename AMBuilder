@@ -25,7 +25,7 @@ for cxx in builder.targets:
     'src/websocket_connection_base.cpp',
     'src/websocket_connection_ssl.cpp',
     'src/smn_websocket.cpp',
-    'CxxUrl/url.cpp',
+    'src/url.cpp',
     os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
   ]
 

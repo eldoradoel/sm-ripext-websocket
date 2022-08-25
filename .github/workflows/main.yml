@@ -2,6 +2,9 @@ name: Build
 
 on: [push, pull_request, workflow_dispatch]
 
+env:
+  BUILD_ARCH: x86
+
 jobs:
   build:
     name: Build
@@ -9,16 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04,windows-2019]
-        include:
-          - os: ubuntu-20.04
-            target-archs: x86
-
-          - os: ubuntu-22.04
-            target-archs: x86
-
-          - os: windows-2019
-            target-archs: x86
+        os: [ubuntu-20.04, ubuntu-22.04, windows-2019]
 
     steps:
       - name: Install Linux packages
@@ -28,14 +22,23 @@ jobs:
           sudo apt update
           sudo apt install -yq --no-install-recommends gcc-multilib g++-multilib libssl-dev:i386
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
           path: extension
           submodules: recursive
+
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
 
       - name: Checkout AMBuild
         uses: actions/checkout@v2
@@ -51,12 +54,12 @@ jobs:
       - name: Build
         working-directory: extension
         shell: bash
-        env:
-          BREAKPAD_SYMBOL_SERVER: ${{ secrets.BREAKPAD_SYMBOL_SERVER }}
         run: |
+          unzip -qq windows/boost.zip -d windows
+          unzip -qq windows/openssl.zip -d windows
           mkdir build && cd build
           perl ../curl/lib/mk-ca-bundle.pl
-          python ../configure.py --enable-optimize --targets=${{ matrix.target-archs }} --sm-path ../sourcemod
+          python ../configure.py --enable-optimize --targets=${{env.BUILD_ARCH}} --sm-path ../sourcemod
           ambuild
 
       - name: Upload artifact
