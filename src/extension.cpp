@@ -65,6 +65,7 @@ static void CheckCompletedRequests()
 
 	while ((message = curl_multi_info_read(g_Curl, &pending)))
 	{
+		smutils->LogMessage(myself,"CheckCompletedRequests %d",message->msg);
 		if (message->msg != CURLMSG_DONE)
 		{
 			continue;
@@ -84,6 +85,7 @@ static void CheckCompletedRequests()
 
 static void PerformRequests(uv_timer_t *handle)
 {
+	smutils->LogMessage(myself,"PerformRequests");
 	int running;
 	curl_multi_socket_action(g_Curl, CURL_SOCKET_TIMEOUT, 0, &running);
 
@@ -103,7 +105,7 @@ static void CurlSocketActivity(uv_poll_t *handle, int status, int events)
 	{
 		flags |= CURL_CSELECT_OUT;
 	}
-
+	smutils->LogMessage(myself,"CurlSocketActivity read %d write %d",events & UV_READABLE,events & UV_WRITABLE);
 	int running;
 	curl_multi_socket_action(g_Curl, context->socket, flags, &running);
 
@@ -150,6 +152,7 @@ static int CurlSocketCallback(CURL *curl, curl_socket_t socket, int action, void
 
 static int CurlTimeoutCallback(CURLM *multi, long timeout_ms, void *userdata)
 {
+	smutils->LogMessage(myself,"CurlTimeoutCallback %d",timeout_ms);
 	if (timeout_ms == -1)
 	{
 		uv_timer_stop(&g_Timeout);
