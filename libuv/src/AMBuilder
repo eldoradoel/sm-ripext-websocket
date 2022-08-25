@@ -70,7 +70,6 @@ for cxx in builder.targets:
       'unix/fs.c',
       'unix/getaddrinfo.c',
       'unix/getnameinfo.c',
-      'unix/hurd.c',
       'unix/loop-watcher.c',
       'unix/loop.c',
       'unix/pipe.c',
