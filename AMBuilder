@@ -33,7 +33,6 @@ for cxx in builder.targets:
     os.path.join(builder.sourcePath, 'curl', 'include'),
     os.path.join(builder.sourcePath, 'jansson', 'include'),
     os.path.join(builder.sourcePath, 'libuv', 'include'),
-    os.path.join(builder.sourcePath, 'CxxUrl'),
     os.path.join(builder.sourcePath, 'src'),
     os.path.join(builder.sourcePath, 'windows' ,'boost'),
   ]
