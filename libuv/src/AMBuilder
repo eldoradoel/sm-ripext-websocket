@@ -66,7 +66,7 @@ for cxx in builder.targets:
       'unix/async.c',
       'unix/core.c',
       'unix/dl.c',
-      'unix/epoll',
+      'unix/epoll.c',
       'unix/fs.c',
       'unix/getaddrinfo.c',
       'unix/getnameinfo.c',
