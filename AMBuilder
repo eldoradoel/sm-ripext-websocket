@@ -3,7 +3,7 @@ import os
 
 libcurl = builder.Build('curl/lib/AMBuilder')
 libjansson = builder.Build('jansson/src/AMBuilder')
-libmbedtls = builder.Build('mbedtls/library/AMBuilder')
+# libmbedtls = builder.Build('mbedtls/library/AMBuilder')
 libnghttp2 = builder.Build('nghttp2/lib/AMBuilder')
 libuv = builder.Build('libuv/src/AMBuilder')
 libz = builder.Build('zlib/AMBuilder')

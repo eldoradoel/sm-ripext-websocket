@@ -9,7 +9,8 @@ for cxx in builder.targets:
   binary.compiler.includes += [
     os.path.join(builder.sourcePath, 'curl', 'include'),
     os.path.join(builder.sourcePath, 'curl', 'lib'),
-    os.path.join(builder.sourcePath, 'mbedtls', 'include'),
+    # os.path.join(builder.sourcePath, 'mbedtls', 'include'),
+    os.path.join(builder.sourcePath, 'windows', 'openssl', 'include'),
     os.path.join(builder.sourcePath, 'nghttp2', 'lib', 'includes'),
     os.path.join(builder.sourcePath, 'zlib'),
   ]

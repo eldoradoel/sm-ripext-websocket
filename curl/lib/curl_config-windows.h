@@ -946,7 +946,7 @@
 /* #undef USE_SECTRANSP */
 
 /* if mbedTLS is enabled */
-#define USE_MBEDTLS 1
+// #define USE_MBEDTLS 1
 
 /* if libSSH2 is in use */
 /* #undef USE_LIBSSH2 */
@@ -962,6 +962,7 @@
 
 /* if OpenSSL is in use */
 /* #undef USE_OPENSSL */
+#define USE_OPENSSL 1
 
 /* to enable NGHTTP2  */
 #define USE_NGHTTP2 1

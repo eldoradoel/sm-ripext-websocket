@@ -981,7 +981,7 @@
 #define USE_MANUAL 1
 
 /* if mbedTLS is enabled */
-#define USE_MBEDTLS 1
+/* #undef USE_MBEDTLS */
 
 /* if MesaLink is enabled */
 /* #undef USE_MESALINK */
@@ -1008,7 +1008,7 @@
 /* #undef USE_OPENLDAP */
 
 /* if OpenSSL is in use */
-/* #undef USE_OPENSSL */
+#define USE_OPENSSL 1
 
 /* if quiche is in use */
 /* #undef USE_QUICHE */
