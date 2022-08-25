@@ -3,7 +3,6 @@ import os
 
 libcurl = builder.Build('curl/lib/AMBuilder')
 libjansson = builder.Build('jansson/src/AMBuilder')
-# libmbedtls = builder.Build('mbedtls/library/AMBuilder')
 libnghttp2 = builder.Build('nghttp2/lib/AMBuilder')
 libuv = builder.Build('libuv/src/AMBuilder')
 libz = builder.Build('zlib/AMBuilder')
@@ -56,7 +55,6 @@ for cxx in builder.targets:
   binary.compiler.postlink += [
     libcurl[arch].binary,
     libjansson[arch].binary,
-    # libmbedtls[arch].binary,
     libnghttp2[arch].binary,
     libuv[arch].binary,
     libz[arch].binary,

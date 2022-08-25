@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 2018 - 2021, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 2018 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -19,6 +19,8 @@
  *
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
+ *
+ * SPDX-License-Identifier: curl
  *
  ***************************************************************************/
 
@@ -101,7 +103,7 @@ void de_init(struct dohentry *d);
 void de_cleanup(struct dohentry *d);
 #endif
 
-#else /* if DOH is disabled */
+#else /* if DoH is disabled */
 #define Curl_doh(a,b,c,d) NULL
 #define Curl_doh_is_resolved(x,y) CURLE_COULDNT_RESOLVE_HOST
 #endif

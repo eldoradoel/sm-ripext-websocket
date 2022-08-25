@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2021, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -17,6 +17,8 @@
  *
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
+ *
+ * SPDX-License-Identifier: curl
  *
  ***************************************************************************/
 
@@ -178,7 +180,7 @@ static CURLcode inflate_stream(struct Curl_easy *data,
   /* Dynamically allocate a buffer for decompression because it's uncommonly
      large to hold on the stack */
   decomp = malloc(DSIZ);
-  if(decomp == NULL)
+  if(!decomp)
     return exit_zlib(data, z, &zp->zlib_init, CURLE_OUT_OF_MEMORY);
 
   /* because the buffer size is fixed, iteratively decompress and transfer to
@@ -240,7 +242,8 @@ static CURLcode inflate_stream(struct Curl_easy *data,
         }
         zp->zlib_init = ZLIB_UNINIT;    /* inflateEnd() already called. */
       }
-      /* FALLTHROUGH */
+      result = exit_zlib(data, z, &zp->zlib_init, process_zlib_error(data, z));
+      break;
     default:
       result = exit_zlib(data, z, &zp->zlib_init, process_zlib_error(data, z));
       break;
@@ -487,7 +490,7 @@ static CURLcode gzip_unencode_write(struct Curl_easy *data,
        */
       z->avail_in = (uInt) nbytes;
       z->next_in = malloc(z->avail_in);
-      if(z->next_in == NULL) {
+      if(!z->next_in) {
         return exit_zlib(data, z, &zp->zlib_init, CURLE_OUT_OF_MEMORY);
       }
       memcpy(z->next_in, buf, z->avail_in);
@@ -509,7 +512,7 @@ static CURLcode gzip_unencode_write(struct Curl_easy *data,
     ssize_t hlen;
     z->avail_in += (uInt) nbytes;
     z->next_in = Curl_saferealloc(z->next_in, z->avail_in);
-    if(z->next_in == NULL) {
+    if(!z->next_in) {
       return exit_zlib(data, z, &zp->zlib_init, CURLE_OUT_OF_MEMORY);
     }
     /* Append the new block of data to the previous one */
@@ -985,7 +988,8 @@ new_unencoding_writer(struct Curl_easy *data,
   return writer;
 }
 
-/* Write data using an unencoding writer stack. */
+/* Write data using an unencoding writer stack. "nbytes" is not
+   allowed to be 0. */
 CURLcode Curl_unencode_write(struct Curl_easy *data,
                              struct contenc_writer *writer,
                              const char *buf, size_t nbytes)
@@ -1024,12 +1028,16 @@ static const struct content_encoding *find_encoding(const char *name,
   return NULL;
 }
 
+/* allow no more than 5 "chained" compression steps */
+#define MAX_ENCODE_STACK 5
+
 /* Set-up the unencoding stack from the Content-Encoding header value.
  * See RFC 7231 section 3.1.2.2. */
 CURLcode Curl_build_unencoding_stack(struct Curl_easy *data,
                                      const char *enclist, int maybechunked)
 {
   struct SingleRequest *k = &data->req;
+  int counter = 0;
 
   do {
     const char *name;
@@ -1064,6 +1072,11 @@ CURLcode Curl_build_unencoding_stack(struct Curl_easy *data,
       if(!encoding)
         encoding = &error_encoding;  /* Defer error at stack use. */
 
+      if(++counter >= MAX_ENCODE_STACK) {
+        failf(data, "Reject response due to %u content encodings",
+              counter);
+        return CURLE_BAD_CONTENT_ENCODING;
+      }
       /* Stack the unencoding stage. */
       writer = new_unencoding_writer(data, encoding, k->writer_stack);
       if(!writer)
