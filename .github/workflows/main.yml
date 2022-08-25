@@ -28,9 +28,6 @@ jobs:
           path: extension
           submodules: recursive
 
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
