@@ -88,7 +88,6 @@ for cxx in builder.targets:
     'headers.c',
     'hmac.c',
     'hostasyn.c',
-    'hostcheck.c',
     'hostip.c',
     'hostip4.c',
     'hostip6.c',
