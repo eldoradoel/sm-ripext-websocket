@@ -136,6 +136,10 @@ bool HTTPFormContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 #endif
 
+#ifdef WIN32
+	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+#endif
+
 	return true;
 }
 
