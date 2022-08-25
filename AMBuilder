@@ -57,7 +57,7 @@ for cxx in builder.targets:
   binary.compiler.postlink += [
     libcurl[arch].binary,
     libjansson[arch].binary,
-    libmbedtls[arch].binary,
+    # libmbedtls[arch].binary,
     libnghttp2[arch].binary,
     libuv[arch].binary,
     libz[arch].binary,
