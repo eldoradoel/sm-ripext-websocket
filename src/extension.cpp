@@ -235,6 +235,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	g_Curl = curl_multi_init();
 	curl_multi_setopt(g_Curl, CURLMOPT_SOCKETFUNCTION, &CurlSocketCallback);
 	curl_multi_setopt(g_Curl, CURLMOPT_TIMERFUNCTION, &CurlTimeoutCallback);
+	curl_multi_setopt(g_Curl, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
 
 	/* Initialize libuv */
 	g_Loop = uv_default_loop();
