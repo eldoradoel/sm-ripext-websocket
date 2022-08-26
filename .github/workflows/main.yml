@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, windows-2019]
+        os: [ubuntu-18.04 ,ubuntu-20.04, windows-2019]
 
     steps:
       - name: Install Linux packages
@@ -78,8 +78,8 @@ jobs:
       - name: Package
         run: |
           version=`echo $GITHUB_REF | sed "s/refs\/tags\///"`
+          7z a sm-ripext-${version}-ubuntu-18.04.zip ./ubuntu-18.04/*
           7z a sm-ripext-${version}-ubuntu-20.04.zip ./ubuntu-20.04/*
-          7z a sm-ripext-${version}-ubuntu-22.04.zip ./ubuntu-22.04/*
           7z a sm-ripext-${version}-windows-2019.zip ./windows-2019/*
       - name: Release
         uses: svenstaro/upload-release-action@v2
