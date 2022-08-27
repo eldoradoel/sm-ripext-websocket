@@ -3,7 +3,7 @@ typeset WebSocket_ReadCallback
     //WebSocket_JSON
     function void (WebSocket ws, JSON message, any data);
     //Websocket_STRING
-    function void (websocket ws, const char[] buffer, any data);
+    function void (WebSocket ws, const char[] buffer, any data);
 }
 
 typeset WebSocket_ConnectCallback
