@@ -248,6 +248,13 @@ methodmap HTTPResponse
 	// @param maxlength  Maximum length of the string buffer.
 	// @return           True on success, false if the header was not found.
 	public native bool GetHeader(const char[] name, char[] buffer, int maxlength);
+	
+	// Retrieves an HTTP response string from the response.
+	//
+	// @param buffer     String buffer to store value.
+	// @param maxlength  Maximum length of the string buffer.
+	// @return           True on success, false if the response string was not found.
+	public native bool GetResponseStr(char[] buffer, int maxlength);
 
 	// Retrieves the JSON data of the response.
 	//

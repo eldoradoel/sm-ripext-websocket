@@ -93,28 +93,45 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
     }
 
     uint32_t callback_type = params[2];
-    auto callback = p_context->GetFunctionById((funcid_t)params[3]);
+    IPluginFunction *callback = p_context->GetFunctionById((funcid_t)params[3]);
     if (!callback) {
         p_context->ReportError("Invalid handler callback provided");
         return 0;
     }
 
     cell_t data = params[4];
-
-    connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size) {
+    switch (callback_type)
+    {
+    case WebSocket_JSON:
+        connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size) {
         string message(reinterpret_cast<const char*>(buffer), size);
         free(buffer);
 
-        g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
-			json_t *object = json_loads(message.data(), 0, NULL);
-			Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), NULL);
-			callback->PushCell(hndl_websocket);
-			callback->PushCell(handle);
-			callback->PushCell(data);
-			callback->Execute(nullptr);
+            g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
+			    json_t *object = json_loads(message.data(), 0, NULL);
+			    Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), NULL);
+			    callback->PushCell(hndl_websocket);
+			    callback->PushCell(handle);
+			    callback->PushCell(data);
+			    callback->Execute(nullptr);
+            });
         });
-    });
+        break;
+    case Websocket_STRING:
+        connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size) {
+        string message(reinterpret_cast<const char*>(buffer), size);
+        free(buffer);
 
+            g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
+			    callback->PushCell(hndl_websocket);
+			    callback->PushString(message.data());
+			    callback->PushCell(data);
+			    callback->Execute(nullptr);
+            });
+        });
+        break;
+    
+    }
     return 0;
 }
 
@@ -125,7 +142,7 @@ static cell_t native_SetDisconnectCallback(IPluginContext *p_context, const cell
         return 0;
     }
 
-    auto callback = p_context->GetFunctionById((funcid_t)params[2]);
+    IPluginFunction *callback = p_context->GetFunctionById((funcid_t)params[2]);
     if (!callback) {
         p_context->ReportError("Invalid handler callback provided");
         return 0;

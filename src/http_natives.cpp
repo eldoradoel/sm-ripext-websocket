@@ -604,6 +604,23 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 	return response->hndlData;
 }
 
+static cell_t GetResponseStr(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	struct HTTPResponse *response;
+	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+	}
+
+	pContext->StringToLocalUTF8(params[2], params[3], response->body, NULL);
+
+	return 1;
+}
+
 static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -679,6 +696,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPRequest.Timeout.get",			GetRequestTimeout},
 	{"HTTPRequest.Timeout.set",			SetRequestTimeout},
 	{"HTTPResponse.Data.get",			GetResponseData},
+	{"HTTPResponse.GetResponseStr",		GetResponseStr},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},
 

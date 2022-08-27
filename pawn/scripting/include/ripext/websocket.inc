@@ -1,8 +1,19 @@
-typedef WebSocket_ReadCallback = function void (WebSocket ws, JSON message, any data);
-typedef WebSocket_ConnectCallback = function void (WebSocket ws, any data);
+typeset WebSocket_ReadCallback
+{
+    //WebSocket_JSON
+    function void (WebSocket ws, JSON message, any data);
+    //Websocket_STRING
+    function void (websocket ws, const char[] buffer, any data);
+}
+
+typeset WebSocket_ConnectCallback
+{
+    function void (WebSocket ws, any data);
+}
 
 enum WebSocket_Protocol {
-    WebSocket_JSON
+    WebSocket_JSON,
+    Websocket_STRING,
 }
 
 methodmap WebSocket < Handle {
