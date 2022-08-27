@@ -567,6 +567,21 @@ static cell_t SetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t GetResponseDataLength(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	struct HTTPResponse *response;
+	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+	}
+
+	return response->size;
+}
+
 static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -671,34 +686,35 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 
 const sp_nativeinfo_t http_natives[] =
 {
-	{"HTTPRequest.HTTPRequest",			CreateRequest},
-	{"HTTPRequest.AppendFormParam",		AppendRequestFormParam},
-	{"HTTPRequest.AppendQueryParam",	AppendRequestQueryParam},
-	{"HTTPRequest.SetBasicAuth",		SetRequestBasicAuth},
-	{"HTTPRequest.SetHeader",			SetRequestHeader},
-	{"HTTPRequest.SetProxy",			SetProxy},
-	{"HTTPRequest.Get",					PerformGetRequest},
-	{"HTTPRequest.Post",				PerformPostRequest},
-	{"HTTPRequest.Put",					PerformPutRequest},
-	{"HTTPRequest.Patch",				PerformPatchRequest},
-	{"HTTPRequest.Delete",				PerformDeleteRequest},
-	{"HTTPRequest.DownloadFile",		PerformDownloadFile},
-	{"HTTPRequest.UploadFile",			PerformUploadFile},
-	{"HTTPRequest.PostForm",			PerformPostForm},
-	{"HTTPRequest.ConnectTimeout.get",	GetRequestConnectTimeout},
-	{"HTTPRequest.ConnectTimeout.set",	SetRequestConnectTimeout},
-	{"HTTPRequest.MaxRedirects.get",	GetRequestMaxRedirects},
-	{"HTTPRequest.MaxRedirects.set",	SetRequestMaxRedirects},
-	{"HTTPRequest.MaxRecvSpeed.get",	GetRequestMaxRecvSpeed},
-	{"HTTPRequest.MaxRecvSpeed.set",	SetRequestMaxRecvSpeed},
-	{"HTTPRequest.MaxSendSpeed.get",	GetRequestMaxSendSpeed},
-	{"HTTPRequest.MaxSendSpeed.set",	SetRequestMaxSendSpeed},
-	{"HTTPRequest.Timeout.get",			GetRequestTimeout},
-	{"HTTPRequest.Timeout.set",			SetRequestTimeout},
-	{"HTTPResponse.Data.get",			GetResponseData},
-	{"HTTPResponse.GetResponseStr",		GetResponseStr},
-	{"HTTPResponse.Status.get",			GetResponseStatus},
-	{"HTTPResponse.GetHeader",			GetResponseHeader},
+	{"HTTPRequest.HTTPRequest",				CreateRequest},
+	{"HTTPRequest.AppendFormParam",			AppendRequestFormParam},
+	{"HTTPRequest.AppendQueryParam",		AppendRequestQueryParam},
+	{"HTTPRequest.SetBasicAuth",			SetRequestBasicAuth},
+	{"HTTPRequest.SetHeader",				SetRequestHeader},
+	{"HTTPRequest.SetProxy",				SetProxy},
+	{"HTTPRequest.Get",						PerformGetRequest},
+	{"HTTPRequest.Post",					PerformPostRequest},
+	{"HTTPRequest.Put",						PerformPutRequest},
+	{"HTTPRequest.Patch",					PerformPatchRequest},
+	{"HTTPRequest.Delete",					PerformDeleteRequest},
+	{"HTTPRequest.DownloadFile",			PerformDownloadFile},
+	{"HTTPRequest.UploadFile",				PerformUploadFile},
+	{"HTTPRequest.PostForm",				PerformPostForm},
+	{"HTTPRequest.ConnectTimeout.get",		GetRequestConnectTimeout},
+	{"HTTPRequest.ConnectTimeout.set",		SetRequestConnectTimeout},
+	{"HTTPRequest.MaxRedirects.get",		GetRequestMaxRedirects},
+	{"HTTPRequest.MaxRedirects.set",		SetRequestMaxRedirects},
+	{"HTTPRequest.MaxRecvSpeed.get",		GetRequestMaxRecvSpeed},
+	{"HTTPRequest.MaxRecvSpeed.set",		SetRequestMaxRecvSpeed},
+	{"HTTPRequest.MaxSendSpeed.get",		GetRequestMaxSendSpeed},
+	{"HTTPRequest.MaxSendSpeed.set",		SetRequestMaxSendSpeed},
+	{"HTTPRequest.Timeout.get",				GetRequestTimeout},
+	{"HTTPRequest.Timeout.set",				SetRequestTimeout},
+	{"HTTPResponse.ResponseDataLength.get",	GetResponseDataLength},
+	{"HTTPResponse.Data.get",				GetResponseData},
+	{"HTTPResponse.GetResponseStr",			GetResponseStr},
+	{"HTTPResponse.Status.get",				GetResponseStatus},
+	{"HTTPResponse.GetHeader",				GetResponseHeader},
 
 	{NULL,								NULL}
 };

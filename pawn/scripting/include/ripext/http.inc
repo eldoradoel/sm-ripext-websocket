@@ -267,4 +267,9 @@ methodmap HTTPResponse
 	property HTTPStatus Status {
 		public native get();
 	}
+
+	// Retrieves the HTTP response length.
+	property int ResponseDataLength {
+		public native get();
+	}
 };
