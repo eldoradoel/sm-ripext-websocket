@@ -2,10 +2,10 @@
 #include "event_loop.h"
 #include <boost/asio/strand.hpp>
 
-websocket_connection_ssl::websocket_connection_ssl(string address, string endpoint, uint16_t port) : websocket_connection_base(address, endpoint, port) {
-    this->ws = make_unique<websocket::stream<beast::ssl_stream<beast::tcp_stream>>>(boost::asio::make_strand(event_loop.get_context()), event_loop.get_ssl_context());
-    this->work = make_unique<boost::asio::io_context::work>(event_loop.get_context());
-    this->resolver = make_shared<tcp::resolver>(event_loop.get_context());
+websocket_connection_ssl::websocket_connection_ssl(std::string address, std::string endpoint, uint16_t port) : websocket_connection_base(address, endpoint, port) {
+    this->ws = std::make_unique<websocket::stream<beast::ssl_stream<beast::tcp_stream>>>(boost::asio::make_strand(event_loop.get_context()), event_loop.get_ssl_context());
+    this->work = std::make_unique<boost::asio::io_context::work>(event_loop.get_context());
+    this->resolver = std::make_shared<tcp::resolver>(event_loop.get_context());
 }
 
 void websocket_connection_ssl::connect() {
@@ -23,7 +23,7 @@ void websocket_connection_ssl::on_resolve(beast::error_code ec, tcp::resolver::r
         return;
     }
 
-    beast::get_lowest_layer(*this->ws).expires_after(chrono::seconds(30));
+    beast::get_lowest_layer(*this->ws).expires_after(std::chrono::seconds(30));
     beast::get_lowest_layer(*this->ws).async_connect(results, beast::bind_front_handler(&websocket_connection_ssl::on_connect, this));
 }
 
@@ -33,8 +33,8 @@ void websocket_connection_ssl::on_connect(beast::error_code ec, tcp::resolver::r
         return;
     }
 
-    auto host = this->address + ":" + to_string(this->port);
-    beast::get_lowest_layer(*this->ws).expires_after(chrono::seconds(30));
+    auto host = this->address + ":" + std::to_string(this->port);
+    beast::get_lowest_layer(*this->ws).expires_after(std::chrono::seconds(30));
     if (!SSL_set_tlsext_host_name(this->ws->next_layer().native_handle(), host.c_str())) {
         ec = beast::error_code(static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category());
         g_RipExt.LogError("SSL Error: %s", ec.message().c_str());

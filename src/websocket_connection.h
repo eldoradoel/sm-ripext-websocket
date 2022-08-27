@@ -9,11 +9,10 @@
 namespace websocket = boost::beast::websocket;
 namespace beast = boost::beast;
 using tcp = boost::asio::ip::tcp;
-using namespace std;
 
 class websocket_connection : public websocket_connection_base {
 public:
-    websocket_connection(string address, string endpoint, uint16_t port);
+    websocket_connection(std::string address, std::string endpoint, uint16_t port);
     void connect();
     void write(boost::asio::const_buffer buffer);
     void close();
@@ -25,7 +24,7 @@ private:
     void on_read(beast::error_code ec, size_t bytes_transferred);
     void on_close(beast::error_code ec);
 
-    unique_ptr<websocket::stream<beast::tcp_stream>> ws;
-    unique_ptr<boost::asio::io_context::work> work;
-    shared_ptr<tcp::resolver> resolver;
+    std::unique_ptr<websocket::stream<beast::tcp_stream>> ws;
+    std::unique_ptr<boost::asio::io_context::work> work;
+    std::shared_ptr<tcp::resolver> resolver;
 };

@@ -104,7 +104,7 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
     {
     case WebSocket_JSON:
         connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size) {
-        string message(reinterpret_cast<const char*>(buffer), size);
+        std::string message(reinterpret_cast<const char*>(buffer), size);
         free(buffer);
 
             g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
@@ -119,7 +119,7 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
         break;
     case Websocket_STRING:
         connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size) {
-        string message(reinterpret_cast<const char*>(buffer), size);
+        std::string message(reinterpret_cast<const char*>(buffer), size);
         free(buffer);
 
             g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
@@ -217,7 +217,7 @@ static cell_t native_SetHeader(IPluginContext *p_context, const cell_t *params) 
     char *header, *value;
     p_context->LocalToString(params[2], &header);
     p_context->LocalToString(params[3], &value);
-    connection->set_header(string(header), string(value));
+    connection->set_header(std::string(header), std::string(value));
     return 0;
 }
 
@@ -231,7 +231,7 @@ static cell_t native_FromURL(IPluginContext *p_context, const cell_t *params) {
             url.path("/");
         }
 
-        string path(url.path());
+        std::string path(url.path());
 
         for (unsigned int i = 0; i < url.query().size(); i++) {
             if (i == 0) {
@@ -245,7 +245,7 @@ static cell_t native_FromURL(IPluginContext *p_context, const cell_t *params) {
             path.append(q.val());
         }
         
-        string host(url.host());
+        std::string host(url.host());
         if (url.scheme() == "wss") {
             if (url.port().empty()) {
                 url.port("443");

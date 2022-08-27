@@ -2,10 +2,10 @@
 #include "event_loop.h"
 #include <boost/asio/strand.hpp>
 
-websocket_connection::websocket_connection(string address, string endpoint, uint16_t port) : websocket_connection_base(address, endpoint, port) {
-    this->ws = make_unique<websocket::stream<beast::tcp_stream>>(boost::asio::make_strand(event_loop.get_context()));
-    this->work = make_unique<boost::asio::io_context::work>(event_loop.get_context());
-    this->resolver = make_shared<tcp::resolver>(event_loop.get_context());
+websocket_connection::websocket_connection(std::string address, std::string endpoint, uint16_t port) : websocket_connection_base(address, endpoint, port) {
+    this->ws = std::make_unique<websocket::stream<beast::tcp_stream>>(boost::asio::make_strand(event_loop.get_context()));
+    this->work = std::make_unique<boost::asio::io_context::work>(event_loop.get_context());
+    this->resolver = std::make_shared<tcp::resolver>(event_loop.get_context());
 }
 
 void websocket_connection::connect() {
@@ -27,7 +27,7 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
         }
         return;
     }
-    beast::get_lowest_layer(*this->ws).expires_after(chrono::seconds(30));
+    beast::get_lowest_layer(*this->ws).expires_after(std::chrono::seconds(30));
     beast::get_lowest_layer(*this->ws).async_connect(results, beast::bind_front_handler(&websocket_connection::on_connect, this));
     g_RipExt.LogMessage("On Resolved %s:%d", address.c_str(), this->port);
 }
