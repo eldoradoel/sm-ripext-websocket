@@ -208,6 +208,20 @@ static cell_t native_Write(IPluginContext *p_context, const cell_t *params) {
     return 0;
 }
 
+static cell_t native_WriteString(IPluginContext *p_context, const cell_t *params) {
+    websocket_connection_base *connection;
+    if (websocket_read_handle(params[1], p_context, &connection) != HandleError_None) {
+        return 0;
+    }
+	
+	char *result;
+
+    p_context->LocalToString(params[2], &result);
+
+    connection->write(boost::asio::buffer(result, strlen(result)));
+    return 0;
+}
+
 static cell_t native_SetHeader(IPluginContext *p_context, const cell_t *params) {
     websocket_connection_base *connection;
     if (websocket_read_handle(params[1], p_context, &connection) != HandleError_None) {
@@ -275,5 +289,6 @@ const sp_nativeinfo_t sm_websocket_natives[] = {
     {"WebSocket.SetDisconnectCallback", native_SetDisconnectCallback},
     {"WebSocket.SetConnectCallback", native_SetConnectCallback},
     {"WebSocket.Write", native_Write},
+    {"WebSocket.WriteString", native_WriteString},
     {NULL, NULL}
 };

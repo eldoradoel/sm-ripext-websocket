@@ -34,4 +34,5 @@ methodmap WebSocket < Handle {
     public native void SetConnectCallback(WebSocket_ConnectCallback callback, any data=0);
     public native void SetDisconnectCallback(WebSocket_ConnectCallback callback, any data=0);
     public native void Write(JSON json);
+    public native void WriteString(const char[] content);
 }
