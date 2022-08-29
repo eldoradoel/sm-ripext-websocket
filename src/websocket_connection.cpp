@@ -15,11 +15,9 @@ void websocket_connection::connect() {
     tcp::resolver::query query(this->address.c_str(), s_port);
     
     this->resolver->async_resolve(query, beast::bind_front_handler(&websocket_connection::on_resolve, this));
-    // g_RipExt.LogMessage("Resolved %s:%d", address.c_str(), this->port);
 }
 
 void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::results_type results) {
-    // g_RipExt.LogMessage("On Resolveing %s:%d", address.c_str(), this->port);
     if (ec) {
         g_RipExt.LogError("Error resolving %s: %s", this->address.c_str(), ec.message().c_str());
         if (this->disconnect_callback) {
@@ -33,7 +31,6 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
 }
 
 void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep) {
-    // g_RipExt.LogMessage("On Connecting %s:%d", address.c_str(), this->port);
     if (ec) {
         g_RipExt.LogError("Error connecting to %s: %s", this->address.c_str(), ec.message().c_str());
         if (this->disconnect_callback) {
@@ -54,7 +51,6 @@ void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::resul
 }
 
 void websocket_connection::on_handshake(beast::error_code ec) {
-    // g_RipExt.LogMessage("On Handshakeing %s:%d", address.c_str(), this->port);
     if (ec) {
         g_RipExt.LogError("WebSocket Handshake Error: %s", ec.message().c_str());
         if (this->disconnect_callback) {

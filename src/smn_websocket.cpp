@@ -214,7 +214,7 @@ static cell_t native_WriteString(IPluginContext *p_context, const cell_t *params
         return 0;
     }
 	
-	char *result;
+    char *result;
 
     p_context->LocalToString(params[2], &result);
 
