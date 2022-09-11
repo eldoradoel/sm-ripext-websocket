@@ -63,8 +63,8 @@ for cxx in builder.targets:
   if binary.compiler.target.platform == 'linux':
     binary.compiler.postlink += [
       '-lrt',
-      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libssl.a'),
-      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libcrypto.a'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libssl.a'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libcrypto.a'),
       # os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
       # os.path.join('/usr/lib/i386-linux-gnu', 'libcrypto.a'),
     ]
