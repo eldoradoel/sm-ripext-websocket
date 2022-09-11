@@ -33,14 +33,14 @@ for cxx in builder.targets:
     os.path.join(builder.sourcePath, 'jansson', 'include'),
     os.path.join(builder.sourcePath, 'libuv', 'include'),
     os.path.join(builder.sourcePath, 'src'),
-    os.path.join(builder.sourcePath, 'windows' ,'boost'),
+    os.path.join(builder.sourcePath, 'boost'),
+    os.path.join(builder.sourcePath, 'openssl', 'include'),
   ]
 
   if binary.compiler.target.platform == 'linux':
     binary.compiler.includes += []
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.includes += [
-      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'include'),
     ]
 
   binary.compiler.defines += [
@@ -63,8 +63,10 @@ for cxx in builder.targets:
   if binary.compiler.target.platform == 'linux':
     binary.compiler.postlink += [
       '-lrt',
-      os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
-      os.path.join('/usr/lib/i386-linux-gnu', 'libcrypto.a'),
+      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libssl.a'),
+      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libcrypto.a'),
+      # os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
+      # os.path.join('/usr/lib/i386-linux-gnu', 'libcrypto.a'),
     ]
 
   elif binary.compiler.target.platform == 'windows':
@@ -74,8 +76,8 @@ for cxx in builder.targets:
       'crypt32.lib',
       'userenv.lib',
       'ws2_32.lib',
-      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libssl32MT.lib'),
-      os.path.join(builder.sourcePath, 'windows' ,'openssl', 'lib' , 'libcrypto32MT.lib'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libssl32MT.lib'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libcrypto32MT.lib'),
     ]
 
   Extension.extensions += [builder.Add(binary)]

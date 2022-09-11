@@ -1,4 +1,4 @@
 .vscode
 build/
-windows/boost
-windows/openssl
+boost/
+openssl/

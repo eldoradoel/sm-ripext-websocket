@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt update
-          sudo apt install -yq --no-install-recommends gcc-multilib g++-multilib libssl-dev:i386
+          sudo apt install -yq --no-install-recommends gcc-multilib g++-multilib
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -52,8 +52,8 @@ jobs:
         working-directory: extension
         shell: bash
         run: |
-          unzip -qq windows/boost.zip -d windows
-          unzip -qq windows/openssl.zip -d windows
+          unzip -qq boost.zip
+          unzip -qq openssl.zip
           mkdir build && cd build
           perl ../curl/lib/mk-ca-bundle.pl
           python ../configure.py --enable-optimize --targets=${{env.BUILD_ARCH}} --sm-path ../sourcemod
