@@ -63,6 +63,8 @@ for cxx in builder.targets:
   if binary.compiler.target.platform == 'linux':
     binary.compiler.postlink += [
       '-lrt',
+      '-ldl',
+      '-lpthread',
       os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libssl.a'),
       os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libcrypto.a'),
       # os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
@@ -72,10 +74,12 @@ for cxx in builder.targets:
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.postlink += [
       'psapi.lib',
+      'user32.lib',
+      'advapi32.lib',
       'iphlpapi.lib',
-      'crypt32.lib',
       'userenv.lib',
       'ws2_32.lib',
+      'crypt32.lib',
       os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libssl32MT.lib'),
       os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libcrypto32MT.lib'),
     ]
