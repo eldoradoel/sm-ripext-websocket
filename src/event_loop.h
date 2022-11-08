@@ -3,7 +3,7 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/ssl.hpp>
 
-class websocket_eventloop : public WebSocketBase {
+class websocket_eventloop{
 public:
     void OnExtLoad();
     void OnExtUnload();

@@ -1,40 +1,12 @@
-#include "smn_websocket.h"
 #include "websocket_connection_base.h"
 #include "websocket_connection_ssl.h"
 #include "websocket_connection.h"
-#include <url.hpp>
+#include "url.hpp"
 
-HandleType_t websocket_handle_type;
-extern const sp_nativeinfo_t sm_websocket_natives[];
-WebSocket smn_websocket;
-
-void WebSocket::OnExtLoad() {
-    HandleAccess hacc;
-    TypeAccess tacc;
-
-    handlesys->InitAccessDefaults(&tacc, &hacc);
-    tacc.ident = myself->GetIdentity();
-    hacc.access[HandleAccess_Read] = HANDLE_RESTRICT_OWNER;
-    tacc.access[HTypeAccess_Create] = true;
-    tacc.access[HTypeAccess_Inherit] = true;
-
-    websocket_handle_type = handlesys->CreateType("WebSocket", this, 0, &tacc, &hacc, myself->GetIdentity(), NULL);
-    sharesys->AddNatives(myself, sm_websocket_natives);
-}
-
-void WebSocket::OnExtUnload() {
-    handlesys->RemoveType(websocket_handle_type, myself->GetIdentity());
-}
-
-void WebSocket::OnHandleDestroy(HandleType_t type, void *object) {
-    reinterpret_cast<websocket_connection_base *>(object)->destroy();
-}
-
-bool WebSocket::GetHandleApproxSize(HandleType_t type, void *object, unsigned int *size) {
-    *size = sizeof(websocket_connection_base);
-
-    return true;
-}
+enum {
+    WebSocket_JSON,
+    Websocket_STRING,
+};
 
 HandleError websocket_read_handle(Handle_t hndl, IPluginContext *p_context, websocket_connection_base **obj) {
     HandleSecurity sec;

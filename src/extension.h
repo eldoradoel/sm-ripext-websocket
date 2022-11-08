@@ -51,7 +51,8 @@ public:
 	CURL *curl;
 };
 
-struct CurlContext {
+struct CurlContext
+{
 	CurlContext(curl_socket_t socket) : socket(socket)
 	{
 		uv_poll_init_socket(g_Loop, &poll_handle, socket);
@@ -73,7 +74,8 @@ struct CurlContext {
 	uv_poll_t poll_handle;
 };
 
-struct HTTPResponse {
+struct HTTPResponse
+{
 	long status = 0;
 	json_t *data = NULL;
 	Handle_t hndlData = BAD_HANDLE;
@@ -83,7 +85,8 @@ struct HTTPResponse {
 	size_t size = 0;
 };
 
-struct JSONObjectKeys {
+struct JSONObjectKeys
+{
 	JSONObjectKeys(json_t *object) : object(object), iter(json_object_iter(object)) {}
 
 	const char *GetKey()
@@ -100,7 +103,6 @@ private:
 	json_t *object;
 	void *iter;
 };
-
 
 /**
  * @brief Implementation of the REST in Pawn Extension.
@@ -128,12 +130,12 @@ public:
 	 * @brief This is called once all known extensions have been loaded.
 	 * Note: It is is a good idea to add natives here, if any are provided.
 	 */
-	//virtual void SDK_OnAllLoaded();
+	// virtual void SDK_OnAllLoaded();
 
 	/**
 	 * @brief Called when the pause state is changed.
 	 */
-	//virtual void SDK_OnPauseChange(bool paused);
+	// virtual void SDK_OnPauseChange(bool paused);
 
 	/**
 	 * @brief this is called when Core wants to know if your extension is working.
@@ -142,10 +144,11 @@ public:
 	 * @param maxlength	Size of error message buffer.
 	 * @return			True if working, false otherwise.
 	 */
-	//virtual bool QueryRunning(char *error, size_t maxlength);
+	// virtual bool QueryRunning(char *error, size_t maxlength);
 	virtual void LogMessage(const char *msg, ...);
-    virtual void LogError(const char *msg, ...);
-    virtual void Defer(std::function<void()> callback);
+	virtual void LogError(const char *msg, ...);
+	virtual void Defer(std::function<void()> callback);
+
 public:
 #if defined SMEXT_CONF_METAMOD
 	/**
@@ -156,7 +159,7 @@ public:
 	 * @param late			Whether or not Metamod considers this a late load.
 	 * @return				True to succeed, false to fail.
 	 */
-	//virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlength, bool late);
+	// virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlength, bool late);
 
 	/**
 	 * @brief Called when Metamod is detaching, after the extension version is called.
@@ -166,7 +169,7 @@ public:
 	 * @param maxlength		Maximum size of error buffer.
 	 * @return				True to succeed, false to fail.
 	 */
-	//virtual bool SDK_OnMetamodUnload(char *error, size_t maxlength);
+	// virtual bool SDK_OnMetamodUnload(char *error, size_t maxlength);
 
 	/**
 	 * @brief Called when Metamod's pause state is changing.
@@ -177,30 +180,13 @@ public:
 	 * @param maxlength		Maximum size of error buffer.
 	 * @return				True to succeed, false to fail.
 	 */
-	//virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlength);
+	// virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlength);
 #endif
 public:
 	void AddRequestToQueue(IHTTPContext *context);
 
 	char caBundlePath[PLATFORM_MAX_PATH];
 };
-
-class WebSocketBase {
-    friend class RipExt;
-
-public:
-    WebSocketBase() {
-        next = WebSocketBase::head;
-        WebSocketBase::head = this;
-    }
-
-    virtual void OnExtLoad() { };
-    virtual void OnExtUnload() { };
-private:
-    WebSocketBase *next;
-    static WebSocketBase *head;
-};
-
 
 class HTTPRequestHandler : public IHandleTypeDispatch
 {
@@ -226,21 +212,32 @@ public:
 	void OnHandleDestroy(HandleType_t type, void *object);
 };
 
+class WebSocketHandler : public IHandleTypeDispatch
+{
+public:
+	void OnHandleDestroy(HandleType_t type, void *object);
+	bool GetHandleApproxSize(HandleType_t type, void *object, unsigned int *size);
+};
+
 extern RipExt g_RipExt;
 
-extern HTTPRequestHandler	g_HTTPRequestHandler;
-extern HandleType_t			htHTTPRequest;
+extern HTTPRequestHandler g_HTTPRequestHandler;
+extern HandleType_t htHTTPRequest;
 
-extern HTTPResponseHandler	g_HTTPResponseHandler;
-extern HandleType_t				htHTTPResponse;
+extern HTTPResponseHandler g_HTTPResponseHandler;
+extern HandleType_t htHTTPResponse;
 
-extern JSONHandler	g_JSONHandler;
-extern HandleType_t		htJSON;
+extern JSONHandler g_JSONHandler;
+extern HandleType_t htJSON;
 
-extern JSONObjectKeysHandler	g_JSONObjectKeysHandler;
-extern HandleType_t				htJSONObjectKeys;
+extern JSONObjectKeysHandler g_JSONObjectKeysHandler;
+extern HandleType_t htJSONObjectKeys;
+
+extern WebSocketHandler g_WebSocketHandler;
+extern HandleType_t websocket_handle_type;
 
 extern const sp_nativeinfo_t http_natives[];
 extern const sp_nativeinfo_t json_natives[];
+extern const sp_nativeinfo_t sm_websocket_natives[];
 
 #endif // _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_

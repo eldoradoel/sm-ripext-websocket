@@ -22,12 +22,14 @@
 #include "extension.h"
 #include "httprequest.h"
 #include "queue.h"
+#include "websocket_connection_base.h"
+#include "event_loop.h"
 #include <atomic>
 
 // Limit the max processing request per tick
 #define MAX_PROCESS 10
 
-RipExt g_RipExt;		/**< Global singleton for extension's main interface */
+RipExt g_RipExt; /**< Global singleton for extension's main interface */
 
 SMEXT_LINK(&g_RipExt);
 
@@ -42,20 +44,21 @@ uv_timer_t g_Timeout;
 uv_async_t g_AsyncPerformRequests;
 uv_async_t g_AsyncStopLoop;
 
+HTTPRequestHandler g_HTTPRequestHandler;
+HandleType_t htHTTPRequest;
 
-HTTPRequestHandler	g_HTTPRequestHandler;
-HandleType_t		htHTTPRequest;
+HTTPResponseHandler g_HTTPResponseHandler;
+HandleType_t htHTTPResponse;
 
-HTTPResponseHandler	g_HTTPResponseHandler;
-HandleType_t			htHTTPResponse;
+JSONHandler g_JSONHandler;
+HandleType_t htJSON;
 
-JSONHandler		g_JSONHandler;
-HandleType_t		htJSON;
+JSONObjectKeysHandler g_JSONObjectKeysHandler;
+HandleType_t htJSONObjectKeys;
 
-JSONObjectKeysHandler	g_JSONObjectKeysHandler;
-HandleType_t			htJSONObjectKeys;
+WebSocketHandler g_WebSocketHandler;
+HandleType_t websocket_handle_type;
 
-WebSocketBase *WebSocketBase::head = NULL;
 std::atomic<bool> unloaded;
 
 static void CheckCompletedRequests()
@@ -117,32 +120,32 @@ static int CurlSocketCallback(CURL *curl, curl_socket_t socket, int action, void
 
 	switch (action)
 	{
-		case CURL_POLL_IN:
-		case CURL_POLL_OUT:
-		case CURL_POLL_INOUT:
-			context = socketdata ? (CurlContext *)socketdata : new CurlContext(socket);
-			curl_multi_assign(g_Curl, socket, context);
+	case CURL_POLL_IN:
+	case CURL_POLL_OUT:
+	case CURL_POLL_INOUT:
+		context = socketdata ? (CurlContext *)socketdata : new CurlContext(socket);
+		curl_multi_assign(g_Curl, socket, context);
 
-			if (action != CURL_POLL_IN)
-			{
-				events |= UV_WRITABLE;
-			}
-			if (action != CURL_POLL_OUT)
-			{
-				events |= UV_READABLE;
-			}
+		if (action != CURL_POLL_IN)
+		{
+			events |= UV_WRITABLE;
+		}
+		if (action != CURL_POLL_OUT)
+		{
+			events |= UV_READABLE;
+		}
 
-			uv_poll_start(&context->poll_handle, events, &CurlSocketActivity);
-			break;
-		case CURL_POLL_REMOVE:
-			if (socketdata)
-			{
-				context = (CurlContext *)socketdata;
-				context->Destroy();
+		uv_poll_start(&context->poll_handle, events, &CurlSocketActivity);
+		break;
+	case CURL_POLL_REMOVE:
+		if (socketdata)
+		{
+			context = (CurlContext *)socketdata;
+			context->Destroy();
 
-				curl_multi_assign(g_Curl, socket, NULL);
-			}
-			break;
+			curl_multi_assign(g_Curl, socket, NULL);
+		}
+		break;
 	}
 
 	return 0;
@@ -215,13 +218,9 @@ static void FrameHook(bool simulating)
 
 bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 {
-	WebSocketBase *head = WebSocketBase::head;
-    while (head) {
-        head->OnExtLoad();
-        head = head->next;
-    }
 	sharesys->AddNatives(myself, http_natives);
 	sharesys->AddNatives(myself, json_natives);
+	sharesys->AddNatives(myself, sm_websocket_natives);
 	sharesys->RegisterLibrary(myself, "ripext");
 
 	/* Initialize cURL */
@@ -258,13 +257,26 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	handlesys->InitAccessDefaults(NULL, &haJSON);
 	haJSON.access[HandleAccess_Delete] = 0;
 
+	/* Set up access rights for the 'WebSocket' handle type */
+	HandleAccess haWS;
+	TypeAccess taWS;
+
+	handlesys->InitAccessDefaults(&taWS, &haWS);
+	taWS.ident = myself->GetIdentity();
+	haWS.access[HandleAccess_Read] = HANDLE_RESTRICT_OWNER;
+	taWS.access[HTypeAccess_Create] = true;
+	taWS.access[HTypeAccess_Inherit] = true;
+
 	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, NULL, &haHTTPRequest, myself->GetIdentity(), NULL);
 	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, NULL, &haHTTPResponse, myself->GetIdentity(), NULL);
 	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, NULL, &haJSON, myself->GetIdentity(), NULL);
 	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
+	websocket_handle_type = handlesys->CreateType("WebSocket", &g_WebSocketHandler, 0, &taWS, &haWS, myself->GetIdentity(), NULL);
 
 	smutils->AddGameFrameHook(&FrameHook);
 	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
+
+	event_loop.OnExtLoad();
 
 	unloaded.store(false);
 
@@ -273,11 +285,6 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 
 void RipExt::SDK_OnUnload()
 {
-	WebSocketBase *head = WebSocketBase::head;
-    while (head) {
-        head->OnExtUnload();
-        head = head->next;
-    }
 	uv_async_send(&g_AsyncStopLoop);
 	uv_thread_join(&g_Thread);
 	uv_loop_close(g_Loop);
@@ -289,8 +296,12 @@ void RipExt::SDK_OnUnload()
 	handlesys->RemoveType(htHTTPResponse, myself->GetIdentity());
 	handlesys->RemoveType(htJSON, myself->GetIdentity());
 	handlesys->RemoveType(htJSONObjectKeys, myself->GetIdentity());
+	handlesys->RemoveType(websocket_handle_type, myself->GetIdentity());
 
 	smutils->RemoveGameFrameHook(&FrameHook);
+
+	event_loop.OnExtUnload();
+
 	unloaded.store(true);
 }
 
@@ -301,6 +312,57 @@ void RipExt::AddRequestToQueue(IHTTPContext *context)
 	g_RequestQueue.Unlock();
 }
 
+void log_msg(void *msg)
+{
+	if (!unloaded.load())
+	{
+		smutils->LogMessage(myself, reinterpret_cast<char *>(msg));
+	}
+	free(msg);
+}
+
+void log_err(void *msg)
+{
+	if (!unloaded.load())
+	{
+		smutils->LogError(myself, reinterpret_cast<char *>(msg));
+	}
+	free(msg);
+}
+
+void RipExt::LogMessage(const char *msg, ...)
+{
+	char *buffer = reinterpret_cast<char *>(malloc(3072));
+	va_list vp;
+	va_start(vp, msg);
+	vsnprintf(buffer, 3072, msg, vp);
+	va_end(vp);
+
+	smutils->AddFrameAction(&log_msg, reinterpret_cast<void *>(buffer));
+}
+
+void RipExt::LogError(const char *msg, ...)
+{
+	char *buffer = reinterpret_cast<char *>(malloc(3072));
+	va_list vp;
+	va_start(vp, msg);
+	vsnprintf(buffer, 3072, msg, vp);
+	va_end(vp);
+
+	smutils->AddFrameAction(&log_err, reinterpret_cast<void *>(buffer));
+}
+
+void execute_cb(void *cb)
+{
+	std::unique_ptr<std::function<void()>> callback(reinterpret_cast<std::function<void()> *>(cb));
+	callback->operator()();
+}
+
+void RipExt::Defer(std::function<void()> callback)
+{
+	std::unique_ptr<std::function<void()>> cb = std::make_unique<std::function<void()>>(callback);
+	smutils->AddFrameAction(&execute_cb, cb.release());
+}
 
 void HTTPRequestHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
@@ -322,48 +384,13 @@ void JSONObjectKeysHandler::OnHandleDestroy(HandleType_t type, void *object)
 	delete (struct JSONObjectKeys *)object;
 }
 
-//websocket
-void log_msg(void *msg) {
-    if (!unloaded.load()) {
-        smutils->LogMessage(myself, reinterpret_cast<char *>(msg));
-    }
-    free(msg);
+void WebSocketHandler::OnHandleDestroy(HandleType_t type, void *object)
+{
+	reinterpret_cast<websocket_connection_base *>(object)->destroy();
 }
 
-
-void log_err(void *msg) {
-    if (!unloaded.load()) {
-        smutils->LogError(myself, reinterpret_cast<char *>(msg));
-    }
-    free(msg);
-}
-
-void RipExt::LogMessage(const char *msg, ...) {
-    char *buffer = reinterpret_cast<char *>(malloc(3072));
-    va_list vp;
-    va_start(vp, msg);
-    vsnprintf(buffer, 3072, msg, vp);
-    va_end(vp);
-
-    smutils->AddFrameAction(&log_msg, reinterpret_cast<void *>(buffer));
-}
-
-void RipExt::LogError(const char *msg, ...) {
-    char *buffer = reinterpret_cast<char *>(malloc(3072));
-    va_list vp;
-    va_start(vp, msg);
-    vsnprintf(buffer, 3072, msg, vp);
-    va_end(vp);
-    
-    smutils->AddFrameAction(&log_err, reinterpret_cast<void *>(buffer));
-}
-
-void execute_cb(void *cb) {
-    std::unique_ptr<std::function<void()>> callback(reinterpret_cast<std::function<void()> *>(cb));
-    callback->operator()();
-}
-
-void RipExt::Defer(std::function<void()> callback) {
-    std::unique_ptr<std::function<void()>> cb = std::make_unique<std::function<void()>>(callback);
-    smutils->AddFrameAction(&execute_cb, cb.release());
+bool WebSocketHandler::GetHandleApproxSize(HandleType_t type, void *object, unsigned int *size)
+{
+	*size = sizeof(websocket_connection_base);
+	return true;
 }
