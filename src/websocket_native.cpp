@@ -34,7 +34,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
     if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
     {
         pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
-        return NULL;
+        return nullptr;
     }
 
     return json;
@@ -91,8 +91,8 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
         free(buffer);
 
             g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
-			    json_t *object = json_loads(message.data(), 0, NULL);
-			    Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), NULL);
+			    json_t *object = json_loads(message.data(), 0, nullptr);
+			    Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
 			    callback->PushCell(hndl_websocket);
 			    callback->PushCell(handle);
 			    callback->PushCell(data);
@@ -182,7 +182,7 @@ static cell_t native_Write(IPluginContext *p_context, const cell_t *params)
 
     json_t *object = GetJSONFromHandle(p_context, params[2]);
 
-    if (object == NULL)
+    if (object == nullptr)
     {
         return 0;
     }
@@ -275,7 +275,7 @@ static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params)
             connection = new websocket_connection(host, path, stoi(url.port()));
         }
 
-        return handlesys->CreateHandle(websocket_handle_type, connection, p_context->GetIdentity(), myself->GetIdentity(), NULL);
+        return handlesys->CreateHandle(websocket_handle_type, connection, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
     }
     catch (...)
     {

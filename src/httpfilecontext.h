@@ -39,7 +39,7 @@ public: // IHTTPContext
 	void OnCompleted();
 
 private:
-	FILE *file = NULL;
+	FILE *file = nullptr;
 
 	bool isUpload;
 	const std::string url;

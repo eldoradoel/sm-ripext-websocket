@@ -143,7 +143,7 @@ static int CurlSocketCallback(CURL *curl, curl_socket_t socket, int action, void
 			context = (CurlContext *)socketdata;
 			context->Destroy();
 
-			curl_multi_assign(g_Curl, socket, NULL);
+			curl_multi_assign(g_Curl, socket, nullptr);
 		}
 		break;
 	}
@@ -240,21 +240,21 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	uv_timer_init(g_Loop, &g_Timeout);
 	uv_async_init(g_Loop, &g_AsyncPerformRequests, &AsyncPerformRequests);
 	uv_async_init(g_Loop, &g_AsyncStopLoop, &AsyncStopLoop);
-	uv_thread_create(&g_Thread, &EventLoop, NULL);
+	uv_thread_create(&g_Thread, &EventLoop, nullptr);
 
 	/* Set up access rights for the 'HTTPRequest' handle type */
 	HandleAccess haHTTPRequest;
-	handlesys->InitAccessDefaults(NULL, &haHTTPRequest);
+	handlesys->InitAccessDefaults(nullptr, &haHTTPRequest);
 	haHTTPRequest.access[HandleAccess_Delete] = 0;
 
 	/* Set up access rights for the 'HTTPResponse' handle type */
 	HandleAccess haHTTPResponse;
-	handlesys->InitAccessDefaults(NULL, &haHTTPResponse);
+	handlesys->InitAccessDefaults(nullptr, &haHTTPResponse);
 	haHTTPResponse.access[HandleAccess_Clone] = HANDLE_RESTRICT_IDENTITY;
 
 	/* Set up access rights for the 'JSON' handle type */
 	HandleAccess haJSON;
-	handlesys->InitAccessDefaults(NULL, &haJSON);
+	handlesys->InitAccessDefaults(nullptr, &haJSON);
 	haJSON.access[HandleAccess_Delete] = 0;
 
 	/* Set up access rights for the 'WebSocket' handle type */
@@ -267,11 +267,11 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	taWS.access[HTypeAccess_Create] = true;
 	taWS.access[HTypeAccess_Inherit] = true;
 
-	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, NULL, &haHTTPRequest, myself->GetIdentity(), NULL);
-	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, NULL, &haHTTPResponse, myself->GetIdentity(), NULL);
-	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, NULL, &haJSON, myself->GetIdentity(), NULL);
-	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
-	websocket_handle_type = handlesys->CreateType("WebSocket", &g_WebSocketHandler, 0, &taWS, &haWS, myself->GetIdentity(), NULL);
+	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, nullptr, &haHTTPRequest, myself->GetIdentity(), nullptr);
+	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, nullptr, &haHTTPResponse, myself->GetIdentity(), nullptr);
+	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, nullptr, &haJSON, myself->GetIdentity(), nullptr);
+	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, nullptr, nullptr, myself->GetIdentity(), nullptr);
+	websocket_handle_type = handlesys->CreateType("WebSocket", &g_WebSocketHandler, 0, &taWS, &haWS, myself->GetIdentity(), nullptr);
 
 	smutils->AddGameFrameHook(&FrameHook);
 	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);

@@ -31,7 +31,7 @@ static HTTPRequest *GetRequestFromHandle(IPluginContext *pContext, Handle_t hndl
 	if ((err = handlesys->ReadHandle(hndl, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndl, err);
-		return NULL;
+		return nullptr;
 	}
 
 	return request;
@@ -46,7 +46,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
-		return NULL;
+		return nullptr;
 	}
 
 	return json;
@@ -67,7 +67,7 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndlRequest = handlesys->CreateHandleEx(htHTTPRequest, request, &sec, NULL, &err);
+	Handle_t hndlRequest = handlesys->CreateHandleEx(htHTTPRequest, request, &sec, nullptr, &err);
 	if (hndlRequest == BAD_HANDLE)
 	{
 		delete request;
@@ -82,7 +82,7 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 static cell_t AppendRequestFormParam(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -114,7 +114,7 @@ static cell_t AppendRequestFormParam(IPluginContext *pContext, const cell_t *par
 static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -146,7 +146,7 @@ static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *pa
 static cell_t SetRequestBasicAuth(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -165,7 +165,7 @@ static cell_t SetRequestBasicAuth(IPluginContext *pContext, const cell_t *params
 static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -197,7 +197,7 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 static cell_t SetProxy(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -220,7 +220,7 @@ static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -228,13 +228,13 @@ static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
 	cell_t value = params[3];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
 
-	request->Perform("GET", NULL, forward, value);
+	request->Perform("GET", nullptr, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -246,13 +246,13 @@ static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
 
 	json_t *data = GetJSONFromHandle(pContext, params[2]);
-	if (data == NULL)
+	if (data == nullptr)
 	{
 		return 0;
 	}
@@ -260,8 +260,8 @@ static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
@@ -278,13 +278,13 @@ static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
 
 	json_t *data = GetJSONFromHandle(pContext, params[2]);
-	if (data == NULL)
+	if (data == nullptr)
 	{
 		return 0;
 	}
@@ -292,8 +292,8 @@ static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
@@ -310,13 +310,13 @@ static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
 
 	json_t *data = GetJSONFromHandle(pContext, params[2]);
-	if (data == NULL)
+	if (data == nullptr)
 	{
 		return 0;
 	}
@@ -324,8 +324,8 @@ static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
@@ -342,7 +342,7 @@ static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *param
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -350,13 +350,13 @@ static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *param
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
 	cell_t value = params[3];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
 
-	request->Perform("DELETE", NULL, forward, value);
+	request->Perform("DELETE", nullptr, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -368,7 +368,7 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -379,8 +379,8 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
@@ -397,7 +397,7 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -408,8 +408,8 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
@@ -426,7 +426,7 @@ static cell_t PerformPostForm(IPluginContext *pContext, const cell_t *params)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -434,8 +434,8 @@ static cell_t PerformPostForm(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
 	cell_t value = params[3];
 
-	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(callback))
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
 	{
 		return pContext->ThrowNativeError("Could not create forward.");
 	}
@@ -450,7 +450,7 @@ static cell_t PerformPostForm(IPluginContext *pContext, const cell_t *params)
 static cell_t GetRequestConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -461,7 +461,7 @@ static cell_t GetRequestConnectTimeout(IPluginContext *pContext, const cell_t *p
 static cell_t SetRequestConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -474,7 +474,7 @@ static cell_t SetRequestConnectTimeout(IPluginContext *pContext, const cell_t *p
 static cell_t GetRequestMaxRedirects(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -485,7 +485,7 @@ static cell_t GetRequestMaxRedirects(IPluginContext *pContext, const cell_t *par
 static cell_t SetRequestMaxRedirects(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -498,7 +498,7 @@ static cell_t SetRequestMaxRedirects(IPluginContext *pContext, const cell_t *par
 static cell_t GetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -509,7 +509,7 @@ static cell_t GetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *par
 static cell_t SetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -522,7 +522,7 @@ static cell_t SetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *par
 static cell_t GetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -533,7 +533,7 @@ static cell_t GetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *par
 static cell_t SetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -546,7 +546,7 @@ static cell_t SetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *par
 static cell_t GetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -557,7 +557,7 @@ static cell_t GetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 static cell_t SetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
-	if (request == NULL)
+	if (request == nullptr)
 	{
 		return 0;
 	}
@@ -600,13 +600,13 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 	{
 		json_error_t error;
 		response->data = json_loads(response->body, 0, &error);
-		if (response->data == NULL)
+		if (response->data == nullptr)
 		{
 			pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 			return BAD_HANDLE;
 		}
 
-		response->hndlData = handlesys->CreateHandleEx(htJSON, response->data, &sec, NULL, &err);
+		response->hndlData = handlesys->CreateHandleEx(htJSON, response->data, &sec, nullptr, &err);
 		if (response->hndlData == BAD_HANDLE)
 		{
 			json_decref(response->data);
@@ -631,7 +631,7 @@ static cell_t GetResponseStr(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
 
-	pContext->StringToLocalUTF8(params[2], params[3], response->body, NULL);
+	pContext->StringToLocalUTF8(params[2], params[3], response->body, nullptr);
 
 	return 1;
 }
@@ -678,7 +678,7 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 		return 0;
 	}
 
-	pContext->StringToLocalUTF8(params[3], params[4], header->value.c_str(), NULL);
+	pContext->StringToLocalUTF8(params[3], params[4], header->value.c_str(), nullptr);
 
 	return 1;
 }

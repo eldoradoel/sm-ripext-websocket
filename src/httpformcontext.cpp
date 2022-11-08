@@ -27,7 +27,7 @@ static size_t WriteResponseBody(void *body, size_t size, size_t nmemb, void *use
 	struct HTTPResponse *response = (struct HTTPResponse *)userdata;
 
 	char *temp = (char *)realloc(response->body, response->size + total + 1);
-	if (temp == NULL)
+	if (temp == nullptr)
 	{
 		return 0;
 	}
@@ -49,7 +49,7 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 	strncat(header, buffer, total - 2); // Strip CRLF
 
 	const char *match = strstr(header, ": ");
-	if (match == NULL)
+	if (match == nullptr)
 	{
 		return total;
 	}
@@ -89,7 +89,7 @@ HTTPFormContext::~HTTPFormContext()
 bool HTTPFormContext::InitCurl()
 {
 	curl = curl_easy_init();
-	if (curl == NULL)
+	if (curl == nullptr)
 	{
 		smutils->LogError(myself, "Could not initialize cURL session.");
 		return false;
@@ -155,8 +155,8 @@ void HTTPFormContext::OnCompleted()
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
 
 	HandleError err;
-	HandleSecurity sec(NULL, myself->GetIdentity());
-	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponse, &response, &sec, NULL, &err);
+	HandleSecurity sec(nullptr, myself->GetIdentity());
+	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponse, &response, &sec, nullptr, &err);
 	if (hndlResponse == BAD_HANDLE)
 	{
 		smutils->LogError(myself, "Could not create HTTP response handle (error %d)", err);
@@ -166,7 +166,7 @@ void HTTPFormContext::OnCompleted()
 	forward->PushCell(hndlResponse);
 	forward->PushCell(value);
 	forward->PushString(error);
-	forward->Execute(NULL);
+	forward->Execute(nullptr);
 
 	handlesys->FreeHandle(hndlResponse, &sec);
 	handlesys->FreeHandle(response.hndlData, &sec);

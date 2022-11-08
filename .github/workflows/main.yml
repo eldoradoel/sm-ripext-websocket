@@ -78,7 +78,7 @@ jobs:
           7z a sm-ripext-${{env.version}}-ubuntu-20.04.zip ./ubuntu-20.04/*
           7z a sm-ripext-${{env.version}}-windows-2019.zip ./windows-2019/*
 
-      - name: Release
+      - name: Upload Release File
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}

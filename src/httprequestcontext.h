@@ -38,7 +38,7 @@ public: // IHTTPContext
 	void OnCompleted();
 
 public:
-	char *body = NULL;
+	char *body = nullptr;
 	size_t pos = 0;
 	size_t size = 0;
 

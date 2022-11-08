@@ -30,7 +30,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
-		return NULL;
+		return nullptr;
 	}
 
 	return json;
@@ -42,7 +42,7 @@ static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndl = handlesys->CreateHandleEx(htJSON, object, &sec, NULL, &err);
+	Handle_t hndl = handlesys->CreateHandleEx(htJSON, object, &sec, nullptr, &err);
 	if (hndl == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -57,7 +57,7 @@ static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 static cell_t GetObjectSize(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -68,7 +68,7 @@ static cell_t GetObjectSize(IPluginContext *pContext, const cell_t *params)
 static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return BAD_HANDLE;
 	}
@@ -77,7 +77,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 		return BAD_HANDLE;
@@ -85,7 +85,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, NULL, &err);
+	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, nullptr, &err);
 	if (hndlValue == BAD_HANDLE)
 	{
 		pContext->ThrowNativeError("Could not create value handle (error %d)", err);
@@ -102,7 +102,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -111,7 +111,7 @@ static cell_t GetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 	}
@@ -122,7 +122,7 @@ static cell_t GetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetObjectFloatValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -131,7 +131,7 @@ static cell_t GetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 	}
@@ -142,7 +142,7 @@ static cell_t GetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -151,7 +151,7 @@ static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 	}
@@ -162,7 +162,7 @@ static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -171,14 +171,14 @@ static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return 0;
 	}
 
 	char result[20];
 	snprintf(result, sizeof(result), "%" JSON_INTEGER_FORMAT, json_integer_value(value));
-	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
+	pContext->StringToLocalUTF8(params[3], params[4], result, nullptr);
 
 	return 1;
 }
@@ -186,7 +186,7 @@ static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -195,18 +195,18 @@ static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *param
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return 0;
 	}
 
 	const char *result = json_string_value(value);
-	if (result == NULL)
+	if (result == nullptr)
 	{
 		return 0;
 	}
 
-	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
+	pContext->StringToLocalUTF8(params[3], params[4], result, nullptr);
 
 	return 1;
 }
@@ -214,7 +214,7 @@ static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *param
 static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -223,7 +223,7 @@ static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_object_get(object, key);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 	}
@@ -234,7 +234,7 @@ static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 static cell_t IsObjectKeyValid(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -242,13 +242,13 @@ static cell_t IsObjectKeyValid(IPluginContext *pContext, const cell_t *params)
 	char *key;
 	pContext->LocalToString(params[2], &key);
 
-	return json_object_get(object, key) != NULL;
+	return json_object_get(object, key) != nullptr;
 }
 
 static cell_t SetObjectValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -257,7 +257,7 @@ static cell_t SetObjectValue(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = GetJSONFromHandle(pContext, params[3]);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return 0;
 	}
@@ -268,7 +268,7 @@ static cell_t SetObjectValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -284,7 +284,7 @@ static cell_t SetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetObjectFloatValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -300,7 +300,7 @@ static cell_t SetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 static cell_t SetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -316,7 +316,7 @@ static cell_t SetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetObjectInt64Value(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -327,7 +327,7 @@ static cell_t SetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 	char *val;
 	pContext->LocalToString(params[3], &val);
 
-	json_t *value = json_integer(strtoll(val, NULL, 10));
+	json_t *value = json_integer(strtoll(val, nullptr, 10));
 
 	return (json_object_set_new(object, key, value) == 0);
 }
@@ -335,7 +335,7 @@ static cell_t SetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 static cell_t SetObjectNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -351,7 +351,7 @@ static cell_t SetObjectNullValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetObjectStringValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -370,7 +370,7 @@ static cell_t SetObjectStringValue(IPluginContext *pContext, const cell_t *param
 static cell_t RemoveFromObject(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -384,7 +384,7 @@ static cell_t RemoveFromObject(IPluginContext *pContext, const cell_t *params)
 static cell_t ClearObject(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -395,7 +395,7 @@ static cell_t ClearObject(IPluginContext *pContext, const cell_t *params)
 static cell_t CreateObjectKeys(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return BAD_HANDLE;
 	}
@@ -404,7 +404,7 @@ static cell_t CreateObjectKeys(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndlKeys = handlesys->CreateHandleEx(htJSONObjectKeys, keys, &sec, NULL, &err);
+	Handle_t hndlKeys = handlesys->CreateHandleEx(htJSONObjectKeys, keys, &sec, nullptr, &err);
 	if (hndlKeys == BAD_HANDLE)
 	{
 		delete keys;
@@ -429,12 +429,12 @@ static cell_t ReadObjectKey(IPluginContext *pContext, const cell_t *params)
 	}
 
 	const char *key = keys->GetKey();
-	if (key == NULL)
+	if (key == nullptr)
 	{
 		return 0;
 	}
 
-	pContext->StringToLocalUTF8(params[2], params[3], key, NULL);
+	pContext->StringToLocalUTF8(params[2], params[3], key, nullptr);
 	keys->Next();
 
 	return 1;
@@ -446,7 +446,7 @@ static cell_t CreateArray(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndl = handlesys->CreateHandleEx(htJSON, object, &sec, NULL, &err);
+	Handle_t hndl = handlesys->CreateHandleEx(htJSON, object, &sec, nullptr, &err);
 	if (hndl == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -461,7 +461,7 @@ static cell_t CreateArray(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArraySize(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -472,7 +472,7 @@ static cell_t GetArraySize(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return BAD_HANDLE;
 	}
@@ -480,7 +480,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 		return BAD_HANDLE;
@@ -488,7 +488,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, NULL, &err);
+	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, nullptr, &err);
 	if (hndlValue == BAD_HANDLE)
 	{
 		pContext->ThrowNativeError("Could not create value handle (error %d)", err);
@@ -505,7 +505,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -513,7 +513,7 @@ static cell_t GetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
@@ -524,7 +524,7 @@ static cell_t GetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -532,7 +532,7 @@ static cell_t GetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
@@ -543,7 +543,7 @@ static cell_t GetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -551,7 +551,7 @@ static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
@@ -562,7 +562,7 @@ static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -570,14 +570,14 @@ static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
 
 	char result[20];
 	snprintf(result, sizeof(result), "%" JSON_INTEGER_FORMAT, json_integer_value(value));
-	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
+	pContext->StringToLocalUTF8(params[3], params[4], result, nullptr);
 
 	return 1;
 }
@@ -585,7 +585,7 @@ static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -593,18 +593,18 @@ static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
 
 	const char *result = json_string_value(value);
-	if (result == NULL)
+	if (result == nullptr)
 	{
 		return 0;
 	}
 
-	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
+	pContext->StringToLocalUTF8(params[3], params[4], result, nullptr);
 
 	return 1;
 }
@@ -612,7 +612,7 @@ static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params
 static cell_t IsArrayNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -620,7 +620,7 @@ static cell_t IsArrayNullValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_array_get(object, index);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
@@ -631,7 +631,7 @@ static cell_t IsArrayNullValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -639,7 +639,7 @@ static cell_t SetArrayValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = GetJSONFromHandle(pContext, params[3]);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return 0;
 	}
@@ -650,7 +650,7 @@ static cell_t SetArrayValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -665,7 +665,7 @@ static cell_t SetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -680,7 +680,7 @@ static cell_t SetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -695,7 +695,7 @@ static cell_t SetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -705,7 +705,7 @@ static cell_t SetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 	char *val;
 	pContext->LocalToString(params[3], &val);
 
-	json_t *value = json_integer(json_strtoint(val, NULL, 10));
+	json_t *value = json_integer(json_strtoint(val, nullptr, 10));
 
 	return (json_array_set_new(object, index, value) == 0);
 }
@@ -713,7 +713,7 @@ static cell_t SetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -728,7 +728,7 @@ static cell_t SetArrayNullValue(IPluginContext *pContext, const cell_t *params)
 static cell_t SetArrayStringValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -746,13 +746,13 @@ static cell_t SetArrayStringValue(IPluginContext *pContext, const cell_t *params
 static cell_t PushArrayValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
 
 	json_t *value = GetJSONFromHandle(pContext, params[2]);
-	if (value == NULL)
+	if (value == nullptr)
 	{
 		return 0;
 	}
@@ -763,7 +763,7 @@ static cell_t PushArrayValue(IPluginContext *pContext, const cell_t *params)
 static cell_t PushArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -776,7 +776,7 @@ static cell_t PushArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 static cell_t PushArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -789,7 +789,7 @@ static cell_t PushArrayFloatValue(IPluginContext *pContext, const cell_t *params
 static cell_t PushArrayIntValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -802,7 +802,7 @@ static cell_t PushArrayIntValue(IPluginContext *pContext, const cell_t *params)
 static cell_t PushArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -810,7 +810,7 @@ static cell_t PushArrayInt64Value(IPluginContext *pContext, const cell_t *params
 	char *val;
 	pContext->LocalToString(params[2], &val);
 
-	json_t *value = json_integer(json_strtoint(val, NULL, 10));
+	json_t *value = json_integer(json_strtoint(val, nullptr, 10));
 
 	return (json_array_append_new(object, value) == 0);
 }
@@ -818,7 +818,7 @@ static cell_t PushArrayInt64Value(IPluginContext *pContext, const cell_t *params
 static cell_t PushArrayNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -831,7 +831,7 @@ static cell_t PushArrayNullValue(IPluginContext *pContext, const cell_t *params)
 static cell_t PushArrayStringValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -847,7 +847,7 @@ static cell_t PushArrayStringValue(IPluginContext *pContext, const cell_t *param
 static cell_t RemoveFromArray(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -860,7 +860,7 @@ static cell_t RemoveFromArray(IPluginContext *pContext, const cell_t *params)
 static cell_t ClearArray(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -877,7 +877,7 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 
 	json_error_t error;
 	json_t *object = json_loads(buffer, flags, &error);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 		return BAD_HANDLE;
@@ -885,7 +885,7 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndlObject = handlesys->CreateHandleEx(htJSON, object, &sec, NULL, &err);
+	Handle_t hndlObject = handlesys->CreateHandleEx(htJSON, object, &sec, nullptr, &err);
 	if (hndlObject == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -909,7 +909,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 
 	json_error_t error;
 	json_t *object = json_load_file(realpath, flags, &error);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 		return BAD_HANDLE;
@@ -917,7 +917,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-	Handle_t hndlObject = handlesys->CreateHandleEx(htJSON, object, &sec, NULL, &err);
+	Handle_t hndlObject = handlesys->CreateHandleEx(htJSON, object, &sec, nullptr, &err);
 	if (hndlObject == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -932,7 +932,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 static cell_t ToString(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}
@@ -940,12 +940,12 @@ static cell_t ToString(IPluginContext *pContext, const cell_t *params)
 	size_t flags = (size_t)params[4];
 
 	char *result = json_dumps(object, flags);
-	if (result == NULL)
+	if (result == nullptr)
 	{
 		return 0;
 	}
 
-	pContext->StringToLocalUTF8(params[2], params[3], result, NULL);
+	pContext->StringToLocalUTF8(params[2], params[3], result, nullptr);
 	free(result);
 
 	return 1;
@@ -954,7 +954,7 @@ static cell_t ToString(IPluginContext *pContext, const cell_t *params)
 static cell_t ToFile(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
-	if (object == NULL)
+	if (object == nullptr)
 	{
 		return 0;
 	}

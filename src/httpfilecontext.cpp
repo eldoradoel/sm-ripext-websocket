@@ -48,7 +48,7 @@ HTTPFileContext::~HTTPFileContext()
 bool HTTPFileContext::InitCurl()
 {
 	curl = curl_easy_init();
-	if (curl == NULL)
+	if (curl == nullptr)
 	{
 		smutils->LogError(myself, "Could not initialize cURL session.");
 		return false;
@@ -58,7 +58,7 @@ bool HTTPFileContext::InitCurl()
 	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), "%s", path.c_str());
 
 	file = fopen(realpath, isUpload ? "rb" : "wb");
-	if (file == NULL)
+	if (file == nullptr)
 	{
 		smutils->LogError(myself, "Could not open file %s.", path.c_str());
 		return false;
@@ -137,7 +137,7 @@ void HTTPFileContext::OnCompleted()
 	forward->PushCell(status);
 	forward->PushCell(value);
 	forward->PushString(error);
-	forward->Execute(NULL);
+	forward->Execute(nullptr);
 }
 
 off_t FileSize(FILE *fd)

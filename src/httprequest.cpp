@@ -83,7 +83,7 @@ const std::string HTTPRequest::BuildURL() const
 void HTTPRequest::AppendQueryParam(const char *name, const char *value)
 {
 	CURL *curl = curl_easy_init();
-	if (curl == NULL)
+	if (curl == nullptr)
 	{
 		return;
 	}
@@ -91,7 +91,7 @@ void HTTPRequest::AppendQueryParam(const char *name, const char *value)
 	char *escapedName = curl_easy_escape(curl, name, 0);
 	char *escapedValue = curl_easy_escape(curl, value, 0);
 
-	if (escapedName != NULL && escapedValue != NULL)
+	if (escapedName != nullptr && escapedValue != nullptr)
 	{
 		query.append(query.size() == 0 ? "?" : "&");
 		query.append(escapedName);
@@ -107,7 +107,7 @@ void HTTPRequest::AppendQueryParam(const char *name, const char *value)
 void HTTPRequest::AppendFormParam(const char *name, const char *value)
 {
 	CURL *curl = curl_easy_init();
-	if (curl == NULL)
+	if (curl == nullptr)
 	{
 		return;
 	}
@@ -115,7 +115,7 @@ void HTTPRequest::AppendFormParam(const char *name, const char *value)
 	char *escapedName = curl_easy_escape(curl, name, 0);
 	char *escapedValue = curl_easy_escape(curl, value, 0);
 
-	if (escapedName != NULL && escapedValue != NULL)
+	if (escapedName != nullptr && escapedValue != nullptr)
 	{
 		formData.append(formData.size() == 0 ? "" : "&");
 		formData.append(escapedName);
@@ -130,7 +130,7 @@ void HTTPRequest::AppendFormParam(const char *name, const char *value)
 
 struct curl_slist *HTTPRequest::BuildHeaders()
 {
-	struct curl_slist *headers = NULL;
+	struct curl_slist *headers = nullptr;
 	char header[8192];
 
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
