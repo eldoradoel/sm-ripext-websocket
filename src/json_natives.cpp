@@ -27,7 +27,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	json_t *json;
-	if ((err=handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
 		return NULL;
@@ -423,7 +423,7 @@ static cell_t ReadObjectKey(IPluginContext *pContext, const cell_t *params)
 
 	struct JSONObjectKeys *keys;
 	Handle_t hndlKeys = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlKeys, htJSONObjectKeys, &sec, (void **)&keys)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndlKeys, htJSONObjectKeys, &sec, (void **)&keys)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object keys handle %x (error %d)", hndlKeys, err);
 	}
@@ -970,69 +970,67 @@ static cell_t ToFile(IPluginContext *pContext, const cell_t *params)
 	return (json_dump_file(object, realpath, flags) == 0);
 }
 
-
 const sp_nativeinfo_t json_natives[] =
-{
-	// Objects
-	{"JSONObject.JSONObject",			CreateObject},
-	{"JSONObject.Size.get",				GetObjectSize},
-	{"JSONObject.Get",					GetObjectValue},
-	{"JSONObject.GetBool",				GetObjectBoolValue},
-	{"JSONObject.GetFloat",				GetObjectFloatValue},
-	{"JSONObject.GetInt",				GetObjectIntValue},
-	{"JSONObject.GetInt64",				GetObjectInt64Value},
-	{"JSONObject.GetString",			GetObjectStringValue},
-	{"JSONObject.IsNull",				IsObjectNullValue},
-	{"JSONObject.HasKey",				IsObjectKeyValid},
-	{"JSONObject.Set",					SetObjectValue},
-	{"JSONObject.SetBool",				SetObjectBoolValue},
-	{"JSONObject.SetFloat",				SetObjectFloatValue},
-	{"JSONObject.SetInt",				SetObjectIntValue},
-	{"JSONObject.SetInt64",				SetObjectInt64Value},
-	{"JSONObject.SetNull",				SetObjectNullValue},
-	{"JSONObject.SetString",			SetObjectStringValue},
-	{"JSONObject.Remove",				RemoveFromObject},
-	{"JSONObject.Clear",				ClearObject},
+	{
+		// Objects
+		{"JSONObject.JSONObject", 			CreateObject},
+		{"JSONObject.Size.get", 			GetObjectSize},
+		{"JSONObject.Get", 					GetObjectValue},
+		{"JSONObject.GetBool", 				GetObjectBoolValue},
+		{"JSONObject.GetFloat", 			GetObjectFloatValue},
+		{"JSONObject.GetInt", 				GetObjectIntValue},
+		{"JSONObject.GetInt64", 			GetObjectInt64Value},
+		{"JSONObject.GetString", 			GetObjectStringValue},
+		{"JSONObject.IsNull", 				IsObjectNullValue},
+		{"JSONObject.HasKey", 				IsObjectKeyValid},
+		{"JSONObject.Set", 					SetObjectValue},
+		{"JSONObject.SetBool", 				SetObjectBoolValue},
+		{"JSONObject.SetFloat", 			SetObjectFloatValue},
+		{"JSONObject.SetInt", 				SetObjectIntValue},
+		{"JSONObject.SetInt64", 			SetObjectInt64Value},
+		{"JSONObject.SetNull", 				SetObjectNullValue},
+		{"JSONObject.SetString", 			SetObjectStringValue},
+		{"JSONObject.Remove", 				RemoveFromObject},
+		{"JSONObject.Clear", 				ClearObject},
 
-	{"JSONObject.Keys",					CreateObjectKeys},
-	{"JSONObjectKeys.ReadKey",			ReadObjectKey},
+		{"JSONObject.Keys", 				CreateObjectKeys},
+		{"JSONObjectKeys.ReadKey", 			ReadObjectKey},
 
-	// Arrays
-	{"JSONArray.JSONArray",				CreateArray},
-	{"JSONArray.Length.get",			GetArraySize},
-	{"JSONArray.Get",					GetArrayValue},
-	{"JSONArray.GetBool",				GetArrayBoolValue},
-	{"JSONArray.GetFloat",				GetArrayFloatValue},
-	{"JSONArray.GetInt",				GetArrayIntValue},
-	{"JSONArray.GetInt64",				GetArrayInt64Value},
-	{"JSONArray.GetString",				GetArrayStringValue},
-	{"JSONArray.IsNull",				IsArrayNullValue},
-	{"JSONArray.Set",					SetArrayValue},
-	{"JSONArray.SetBool",				SetArrayBoolValue},
-	{"JSONArray.SetFloat",				SetArrayFloatValue},
-	{"JSONArray.SetInt",				SetArrayIntValue},
-	{"JSONArray.SetInt64",				SetArrayInt64Value},
-	{"JSONArray.SetNull",				SetArrayNullValue},
-	{"JSONArray.SetString",				SetArrayStringValue},
-	{"JSONArray.Push",					PushArrayValue},
-	{"JSONArray.PushBool",				PushArrayBoolValue},
-	{"JSONArray.PushFloat",				PushArrayFloatValue},
-	{"JSONArray.PushInt",				PushArrayIntValue},
-	{"JSONArray.PushInt64",				PushArrayInt64Value},
-	{"JSONArray.PushNull",				PushArrayNullValue},
-	{"JSONArray.PushString",			PushArrayStringValue},
-	{"JSONArray.Remove",				RemoveFromArray},
-	{"JSONArray.Clear",					ClearArray},
+		// Arrays
+		{"JSONArray.JSONArray", 			CreateArray},
+		{"JSONArray.Length.get", 			GetArraySize},
+		{"JSONArray.Get", 					GetArrayValue},
+		{"JSONArray.GetBool", 				GetArrayBoolValue},
+		{"JSONArray.GetFloat", 				GetArrayFloatValue},
+		{"JSONArray.GetInt", 				GetArrayIntValue},
+		{"JSONArray.GetInt64", 				GetArrayInt64Value},
+		{"JSONArray.GetString", 			GetArrayStringValue},
+		{"JSONArray.IsNull", 				IsArrayNullValue},
+		{"JSONArray.Set", 					SetArrayValue},
+		{"JSONArray.SetBool", 				SetArrayBoolValue},
+		{"JSONArray.SetFloat", 				SetArrayFloatValue},
+		{"JSONArray.SetInt", 				SetArrayIntValue},
+		{"JSONArray.SetInt64", 				SetArrayInt64Value},
+		{"JSONArray.SetNull", 				SetArrayNullValue},
+		{"JSONArray.SetString", 			SetArrayStringValue},
+		{"JSONArray.Push", 					PushArrayValue},
+		{"JSONArray.PushBool", 				PushArrayBoolValue},
+		{"JSONArray.PushFloat", 			PushArrayFloatValue},
+		{"JSONArray.PushInt", 				PushArrayIntValue},
+		{"JSONArray.PushInt64", 			PushArrayInt64Value},
+		{"JSONArray.PushNull", 				PushArrayNullValue},
+		{"JSONArray.PushString", 			PushArrayStringValue},
+		{"JSONArray.Remove", 				RemoveFromArray},
+		{"JSONArray.Clear", 				ClearArray},
 
-	// Decoding
-	{"JSONObject.FromString",			FromString},
-	{"JSONObject.FromFile",				FromFile},
-	{"JSONArray.FromString",			FromString},
-	{"JSONArray.FromFile",				FromFile},
+		// Decoding
+		{"JSONObject.FromString", 			FromString},
+		{"JSONObject.FromFile", 			FromFile},
+		{"JSONArray.FromString", 			FromString},
+		{"JSONArray.FromFile", 				FromFile},
 
-	// Encoding
-	{"JSON.ToString",					ToString},
-	{"JSON.ToFile",						ToFile},
+		// Encoding
+		{"JSON.ToString", 					ToString},
+		{"JSON.ToFile", 					ToFile},
 
-	{NULL,								NULL}
-};
+		{nullptr, nullptr}};

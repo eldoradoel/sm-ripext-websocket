@@ -15,7 +15,8 @@ namespace websocket = boost::beast::websocket;
 namespace beast = boost::beast;
 using tcp = boost::asio::ip::tcp;
 
-class websocket_connection_base {
+class websocket_connection_base
+{
 public:
     websocket_connection_base(std::string address, std::string endpoint, uint16_t port);
     void set_write_callback(std::function<void(std::size_t)> callback);
@@ -23,7 +24,7 @@ public:
     void set_connect_callback(std::function<void()> callback);
     void set_disconnect_callback(std::function<void()> callback);
     void set_header(std::string key, std::string value);
-    void add_headers(websocket::request_type& req);
+    void add_headers(websocket::request_type &req);
     void destroy();
 
     virtual void close() = 0;

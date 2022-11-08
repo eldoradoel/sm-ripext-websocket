@@ -80,12 +80,12 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 }
 
 HTTPRequestContext::HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
-	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
-	bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
+									   struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+									   long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+									   bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
 	: method(method), url(url), headers(headers), forward(forward), value(value),
-	connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
-	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
+	  connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
+	  maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {
 	if (data != NULL)
 	{
@@ -116,18 +116,18 @@ bool HTTPRequestContext::InitCurl()
 	if (method.compare("POST") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) size);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t)size);
 	}
 	else if (method.compare("PUT") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
+		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
 	}
 	else if (method.compare("PATCH") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) size);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t)size);
 	}
 	else if (method.compare("DELETE") == 0)
 	{

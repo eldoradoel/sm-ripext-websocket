@@ -12,12 +12,14 @@ namespace websocket = boost::beast::websocket;
 namespace beast = boost::beast;
 using tcp = boost::asio::ip::tcp;
 
-class websocket_connection_ssl : public websocket_connection_base {
+class websocket_connection_ssl : public websocket_connection_base
+{
 public:
     websocket_connection_ssl(std::string address, std::string endpoint, uint16_t port);
     void connect();
     void write(boost::asio::const_buffer buffer);
     void close();
+
 private:
     void on_resolve(beast::error_code ec, tcp::resolver::results_type results);
     void on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep);

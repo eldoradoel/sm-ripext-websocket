@@ -28,7 +28,7 @@ static HTTPRequest *GetRequestFromHandle(IPluginContext *pContext, Handle_t hndl
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	HTTPRequest *request;
-	if ((err=handlesys->ReadHandle(hndl, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndl, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndl, err);
 		return NULL;
@@ -43,7 +43,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
 	json_t *json;
-	if ((err=handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
 		return NULL;
@@ -194,7 +194,7 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t SetProxy(IPluginContext* pContext, const cell_t* params)
+static cell_t SetProxy(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
 	if (request == NULL)
@@ -202,7 +202,7 @@ static cell_t SetProxy(IPluginContext* pContext, const cell_t* params)
 		return 0;
 	}
 
-	char* proxy;
+	char *proxy;
 	pContext->LocalToString(params[2], &proxy);
 
 	if (proxy[0] == '\0')
@@ -211,7 +211,7 @@ static cell_t SetProxy(IPluginContext* pContext, const cell_t* params)
 	}
 
 	request->SetProxy(proxy);
-	
+
 	return 1;
 }
 
@@ -574,7 +574,7 @@ static cell_t GetResponseDataLength(IPluginContext *pContext, const cell_t *para
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
@@ -589,7 +589,7 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 		return BAD_HANDLE;
@@ -626,7 +626,7 @@ static cell_t GetResponseStr(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
@@ -643,7 +643,7 @@ static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
@@ -658,7 +658,7 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
+	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
@@ -683,38 +683,36 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-
 const sp_nativeinfo_t http_natives[] =
-{
-	{"HTTPRequest.HTTPRequest",				CreateRequest},
-	{"HTTPRequest.AppendFormParam",			AppendRequestFormParam},
-	{"HTTPRequest.AppendQueryParam",		AppendRequestQueryParam},
-	{"HTTPRequest.SetBasicAuth",			SetRequestBasicAuth},
-	{"HTTPRequest.SetHeader",				SetRequestHeader},
-	{"HTTPRequest.SetProxy",				SetProxy},
-	{"HTTPRequest.Get",						PerformGetRequest},
-	{"HTTPRequest.Post",					PerformPostRequest},
-	{"HTTPRequest.Put",						PerformPutRequest},
-	{"HTTPRequest.Patch",					PerformPatchRequest},
-	{"HTTPRequest.Delete",					PerformDeleteRequest},
-	{"HTTPRequest.DownloadFile",			PerformDownloadFile},
-	{"HTTPRequest.UploadFile",				PerformUploadFile},
-	{"HTTPRequest.PostForm",				PerformPostForm},
-	{"HTTPRequest.ConnectTimeout.get",		GetRequestConnectTimeout},
-	{"HTTPRequest.ConnectTimeout.set",		SetRequestConnectTimeout},
-	{"HTTPRequest.MaxRedirects.get",		GetRequestMaxRedirects},
-	{"HTTPRequest.MaxRedirects.set",		SetRequestMaxRedirects},
-	{"HTTPRequest.MaxRecvSpeed.get",		GetRequestMaxRecvSpeed},
-	{"HTTPRequest.MaxRecvSpeed.set",		SetRequestMaxRecvSpeed},
-	{"HTTPRequest.MaxSendSpeed.get",		GetRequestMaxSendSpeed},
-	{"HTTPRequest.MaxSendSpeed.set",		SetRequestMaxSendSpeed},
-	{"HTTPRequest.Timeout.get",				GetRequestTimeout},
-	{"HTTPRequest.Timeout.set",				SetRequestTimeout},
-	{"HTTPResponse.ResponseDataLength.get",	GetResponseDataLength},
-	{"HTTPResponse.Data.get",				GetResponseData},
-	{"HTTPResponse.GetResponseStr",			GetResponseStr},
-	{"HTTPResponse.Status.get",				GetResponseStatus},
-	{"HTTPResponse.GetHeader",				GetResponseHeader},
+	{
+		{"HTTPRequest.HTTPRequest", 				CreateRequest},
+		{"HTTPRequest.AppendFormParam", 			AppendRequestFormParam},
+		{"HTTPRequest.AppendQueryParam", 			AppendRequestQueryParam},
+		{"HTTPRequest.SetBasicAuth", 				SetRequestBasicAuth},
+		{"HTTPRequest.SetHeader", 					SetRequestHeader},
+		{"HTTPRequest.SetProxy", 					SetProxy},
+		{"HTTPRequest.Get", 						PerformGetRequest},
+		{"HTTPRequest.Post", 						PerformPostRequest},
+		{"HTTPRequest.Put", 						PerformPutRequest},
+		{"HTTPRequest.Patch", 						PerformPatchRequest},
+		{"HTTPRequest.Delete", 						PerformDeleteRequest},
+		{"HTTPRequest.DownloadFile", 				PerformDownloadFile},
+		{"HTTPRequest.UploadFile", 					PerformUploadFile},
+		{"HTTPRequest.PostForm", 					PerformPostForm},
+		{"HTTPRequest.ConnectTimeout.get", 			GetRequestConnectTimeout},
+		{"HTTPRequest.ConnectTimeout.set", 			SetRequestConnectTimeout},
+		{"HTTPRequest.MaxRedirects.get", 			GetRequestMaxRedirects},
+		{"HTTPRequest.MaxRedirects.set", 			SetRequestMaxRedirects},
+		{"HTTPRequest.MaxRecvSpeed.get", 			GetRequestMaxRecvSpeed},
+		{"HTTPRequest.MaxRecvSpeed.set", 			SetRequestMaxRecvSpeed},
+		{"HTTPRequest.MaxSendSpeed.get", 			GetRequestMaxSendSpeed},
+		{"HTTPRequest.MaxSendSpeed.set", 			SetRequestMaxSendSpeed},
+		{"HTTPRequest.Timeout.get", 				GetRequestTimeout},
+		{"HTTPRequest.Timeout.set", 				SetRequestTimeout},
+		{"HTTPResponse.ResponseDataLength.get", 	GetResponseDataLength},
+		{"HTTPResponse.Data.get", 					GetResponseData},
+		{"HTTPResponse.GetResponseStr", 			GetResponseStr},
+		{"HTTPResponse.Status.get", 				GetResponseStatus},
+		{"HTTPResponse.GetHeader", 					GetResponseHeader},
 
-	{NULL,								NULL}
-};
+		{nullptr, 									nullptr}};

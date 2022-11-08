@@ -28,9 +28,9 @@ class HTTPFormContext : public IHTTPContext
 {
 public:
 	HTTPFormContext(const std::string &url, const std::string &formData,
-		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-		long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
-		bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy);
+					struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+					long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+					bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy);
 	~HTTPFormContext();
 
 public: // IHTTPContext

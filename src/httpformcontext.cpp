@@ -68,13 +68,14 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 }
 
 HTTPFormContext::HTTPFormContext(const std::string &url, const std::string &formData,
-	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
-	bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
+								 struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+								 long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+								 bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
 	: url(url), formData(formData), headers(headers), forward(forward), value(value),
-	connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
-	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
-{}
+	  connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
+	  maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
+{
+}
 
 HTTPFormContext::~HTTPFormContext()
 {
