@@ -110,12 +110,12 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_PROXY, proxy.c_str());
 	}
 
-#ifdef DEBUG
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-#endif
-
 #ifdef WIN32
 	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+#endif
+
+#ifdef DEBUG
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 #endif
 
 	return true;
