@@ -69,14 +69,15 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Package
         run: |
-          version=`echo $GITHUB_REF | sed "s/refs\/tags\///"`
-          7z a sm-ripext-${version}-ubuntu-18.04.zip ./ubuntu-18.04/*
-          7z a sm-ripext-${version}-ubuntu-20.04.zip ./ubuntu-20.04/*
-          7z a sm-ripext-${version}-windows-2019.zip ./windows-2019/*
+          echo version=$GITHUB_REF | sed "s/refs\/tags\///" >> $GITHUB_OUTPUT
+          7z a sm-ripext-${$GITHUB_OUTPUT.version}-ubuntu-18.04.zip ./ubuntu-18.04/*
+          7z a sm-ripext-${$GITHUB_OUTPUT.version}-ubuntu-20.04.zip ./ubuntu-20.04/*
+          7z a sm-ripext-${$GITHUB_OUTPUT.version}-windows-2019.zip ./windows-2019/*
+
       - name: Release
         uses: svenstaro/upload-release-action@v2
         with:
