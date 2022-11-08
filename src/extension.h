@@ -234,10 +234,10 @@ extern JSONObjectKeysHandler g_JSONObjectKeysHandler;
 extern HandleType_t htJSONObjectKeys;
 
 extern WebSocketHandler g_WebSocketHandler;
-extern HandleType_t websocket_handle_type;
+extern HandleType_t htWebSocket;
 
 extern const sp_nativeinfo_t http_natives[];
 extern const sp_nativeinfo_t json_natives[];
-extern const sp_nativeinfo_t sm_websocket_natives[];
+extern const sp_nativeinfo_t websocket_natives[];
 
 #endif // _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_

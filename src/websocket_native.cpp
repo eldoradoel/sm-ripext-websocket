@@ -16,7 +16,7 @@ HandleError websocket_read_handle(Handle_t hndl, IPluginContext *p_context, webs
     sec.pOwner = p_context->GetIdentity();
     sec.pIdentity = myself->GetIdentity();
     HandleError herr;
-    if ((herr = handlesys->ReadHandle(hndl, websocket_handle_type, &sec, reinterpret_cast<void **>(obj))) != HandleError_None)
+    if ((herr = handlesys->ReadHandle(hndl, htWebSocket, &sec, reinterpret_cast<void **>(obj))) != HandleError_None)
     {
         p_context->ReportError("Invalid WebSocket handle (error %d)", herr);
         return herr;
@@ -275,7 +275,7 @@ static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params)
             connection = new websocket_connection(host, path, stoi(url.port()));
         }
 
-        return handlesys->CreateHandle(websocket_handle_type, connection, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
+        return handlesys->CreateHandle(htWebSocket, connection, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
     }
     catch (...)
     {
@@ -284,7 +284,7 @@ static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params)
     }
 }
 
-const sp_nativeinfo_t sm_websocket_natives[] = {
+const sp_nativeinfo_t websocket_natives[] = {
     {"WebSocket.WebSocket",             native_WebSocket},
     {"WebSocket.Connect",               native_Connect},
     {"WebSocket.SetHeader",             native_SetHeader},

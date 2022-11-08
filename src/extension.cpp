@@ -57,7 +57,7 @@ JSONObjectKeysHandler g_JSONObjectKeysHandler;
 HandleType_t htJSONObjectKeys;
 
 WebSocketHandler g_WebSocketHandler;
-HandleType_t websocket_handle_type;
+HandleType_t htWebSocket;
 
 std::atomic<bool> unloaded;
 
@@ -220,7 +220,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 {
 	sharesys->AddNatives(myself, http_natives);
 	sharesys->AddNatives(myself, json_natives);
-	sharesys->AddNatives(myself, sm_websocket_natives);
+	sharesys->AddNatives(myself, websocket_natives);
 	sharesys->RegisterLibrary(myself, "ripext");
 
 	/* Initialize cURL */
@@ -271,7 +271,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, nullptr, &haHTTPResponse, myself->GetIdentity(), nullptr);
 	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, nullptr, &haJSON, myself->GetIdentity(), nullptr);
 	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, nullptr, nullptr, myself->GetIdentity(), nullptr);
-	websocket_handle_type = handlesys->CreateType("WebSocket", &g_WebSocketHandler, 0, &taWS, &haWS, myself->GetIdentity(), nullptr);
+	htWebSocket = handlesys->CreateType("WebSocket", &g_WebSocketHandler, 0, &taWS, &haWS, myself->GetIdentity(), nullptr);
 
 	smutils->AddGameFrameHook(&FrameHook);
 	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
@@ -296,7 +296,7 @@ void RipExt::SDK_OnUnload()
 	handlesys->RemoveType(htHTTPResponse, myself->GetIdentity());
 	handlesys->RemoveType(htJSON, myself->GetIdentity());
 	handlesys->RemoveType(htJSONObjectKeys, myself->GetIdentity());
-	handlesys->RemoveType(websocket_handle_type, myself->GetIdentity());
+	handlesys->RemoveType(htWebSocket, myself->GetIdentity());
 
 	smutils->RemoveGameFrameHook(&FrameHook);
 
