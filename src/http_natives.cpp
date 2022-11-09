@@ -30,7 +30,7 @@ static HTTPRequest *GetRequestFromHandle(IPluginContext *pContext, Handle_t hndl
 	HTTPRequest *request;
 	if ((err = handlesys->ReadHandle(hndl, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
 	{
-		pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndl, err);
+		pContext->ReportError("Invalid HTTPRequest handle %x (error %d)", hndl, err);
 		return nullptr;
 	}
 
@@ -45,7 +45,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	json_t *json;
 	if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
-		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
+		pContext->ReportError("Invalid JSON handle %x (error %d)", hndl, err);
 		return nullptr;
 	}
 
@@ -59,7 +59,7 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 
 	if (url[0] == '\0')
 	{
-		pContext->ThrowNativeError("URL cannot be empty.");
+		pContext->ReportError("URL cannot be empty.");
 		return BAD_HANDLE;
 	}
 
@@ -72,7 +72,7 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 	{
 		delete request;
 
-		pContext->ThrowNativeError("Could not create HTTPRequest handle (error %d)", err);
+		pContext->ReportError("Could not create HTTPRequest handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -92,7 +92,8 @@ static cell_t AppendRequestFormParam(IPluginContext *pContext, const cell_t *par
 
 	if (name[0] == '\0')
 	{
-		return pContext->ThrowNativeError("Parameter name cannot be empty.");
+		pContext->ReportError("Parameter name cannot be empty.");
+		return 0;
 	}
 
 	char value[8192];
@@ -124,7 +125,8 @@ static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *pa
 
 	if (name[0] == '\0')
 	{
-		return pContext->ThrowNativeError("Parameter name cannot be empty.");
+		pContext->ReportError("Parameter name cannot be empty.");
+		return 0;
 	}
 
 	char value[8192];
@@ -175,7 +177,8 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 
 	if (name[0] == '\0')
 	{
-		return pContext->ThrowNativeError("Header name cannot be empty.");
+		pContext->ReportError("Header name cannot be empty.");
+		return 0;
 	}
 
 	char value[8192];
@@ -207,7 +210,8 @@ static cell_t SetProxy(IPluginContext *pContext, const cell_t *params)
 
 	if (proxy[0] == '\0')
 	{
-		return pContext->ThrowNativeError("Proxy Url cannot be empty.");
+		pContext->ReportError("Proxy Url cannot be empty.");
+		return 0;
 	}
 
 	request->SetProxy(proxy);
@@ -231,7 +235,8 @@ static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->Perform("GET", nullptr, forward, value);
@@ -263,7 +268,8 @@ static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->Perform("POST", data, forward, value);
@@ -295,7 +301,8 @@ static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->Perform("PUT", data, forward, value);
@@ -327,7 +334,8 @@ static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->Perform("PATCH", data, forward, value);
@@ -353,7 +361,8 @@ static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *param
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->Perform("DELETE", nullptr, forward, value);
@@ -382,7 +391,8 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->DownloadFile(path, forward, value);
@@ -411,7 +421,8 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->UploadFile(path, forward, value);
@@ -437,7 +448,8 @@ static cell_t PerformPostForm(IPluginContext *pContext, const cell_t *params)
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
 	{
-		return pContext->ThrowNativeError("Could not create forward.");
+		pContext->ReportError("Could not create forward.");
+		return 0;
 	}
 
 	request->PostForm(forward, value);
@@ -576,7 +588,8 @@ static cell_t GetResponseDataLength(IPluginContext *pContext, const cell_t *para
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
 	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
-		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		pContext->ReportError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		return 0;
 	}
 
 	return response->size;
@@ -591,7 +604,7 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
 	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
-		pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		pContext->ReportError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 		return BAD_HANDLE;
 	}
 
@@ -602,7 +615,7 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 		response->data = json_loads(response->body, 0, &error);
 		if (response->data == nullptr)
 		{
-			pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
+			pContext->ReportError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 			return BAD_HANDLE;
 		}
 
@@ -611,7 +624,7 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 		{
 			json_decref(response->data);
 
-			pContext->ThrowNativeError("Could not create data handle (error %d)", err);
+			pContext->ReportError("Could not create data handle (error %d)", err);
 			return BAD_HANDLE;
 		}
 	}
@@ -628,7 +641,8 @@ static cell_t GetResponseStr(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
 	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
-		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		pContext->ReportError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		return 0;
 	}
 
 	pContext->StringToLocalUTF8(params[2], params[3], response->body, nullptr);
@@ -645,7 +659,8 @@ static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
 	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
-		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		pContext->ReportError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		return 0;
 	}
 
 	return response->status;
@@ -660,7 +675,8 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
 	if ((err = handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
-		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		pContext->ReportError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+		return 0;
 	}
 
 	char *name;

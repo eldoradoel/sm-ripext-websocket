@@ -24,4 +24,12 @@ methodmap Crypto
     public 	native bool CRC32(const char[] source, char[] buffer, int maxlength, bool uppercase = true, bool hexdecimal = true);
 
     public 	native bool CRC32File(const char[] file, char[] buffer, int maxlength, bool uppercase = true, bool hexdecimal = true);
+
+    //  - 1 is returned on success (the string output buffer is sufficient)
+    //  otherwise it is the minimum buffer length required
+    public 	native int Base64Encode(const char[] source, char[] buffer, int maxlength);
+
+    //  - 1 is returned on success (the string output buffer is sufficient)
+    //  otherwise it is the minimum buffer length required
+    public 	native int Base64Decode(const char[] source, char[] buffer, int maxlength);
 };

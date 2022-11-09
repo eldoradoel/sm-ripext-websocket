@@ -1,5 +1,6 @@
 #include "extension.h"
 #include <boost/crc.hpp>
+#include <boost/beast/core/detail/base64.hpp>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <openssl/crypto.h>
@@ -18,19 +19,19 @@ static cell_t CryptoMd5(IPluginContext *pContext, const cell_t *params)
 
     if (!MD5_Init(&ctx))
     {
-        pContext->ThrowNativeError("MD5_Init failed");
+        pContext->ReportError("MD5_Init failed");
         return 0;
     }
 
     if (!MD5_Update(&ctx, buffer, std::strlen(buffer)))
     {
-        pContext->ThrowNativeError("MD5_Update failed");
+        pContext->ReportError("MD5_Update failed");
         return 0;
     }
 
     if (!MD5_Final(md, &ctx))
     {
-        pContext->ThrowNativeError("MD5_Final failed");
+        pContext->ReportError("MD5_Final failed");
         return 0;
     }
 
@@ -67,7 +68,7 @@ static cell_t CryptoMd5File(IPluginContext *pContext, const cell_t *params)
 
     if (!MD5_Init(&ctx))
     {
-        pContext->ThrowNativeError("MD5_Init failed");
+        pContext->ReportError("MD5_Init failed");
         return 0;
     }
 
@@ -75,7 +76,7 @@ static cell_t CryptoMd5File(IPluginContext *pContext, const cell_t *params)
 
     if (!fs.is_open())
     {
-        pContext->ThrowNativeError("Could not open file for MD5 calculation: %s", realpath);
+        pContext->ReportError("Could not open file for MD5 calculation: %s", realpath);
         return 0;
     }
 
@@ -85,7 +86,7 @@ static cell_t CryptoMd5File(IPluginContext *pContext, const cell_t *params)
         if (!MD5_Update(&ctx, fsbuf, fs.gcount()))
         {
             fs.close();
-            pContext->ThrowNativeError("MD5_Update failed");
+            pContext->ReportError("MD5_Update failed");
             return 0;
         }
     } while (fs);
@@ -95,7 +96,7 @@ static cell_t CryptoMd5File(IPluginContext *pContext, const cell_t *params)
         fs.close();
         if (!MD5_Final(md, &ctx))
         {
-            pContext->ThrowNativeError("MD5_Final failed");
+            pContext->ReportError("MD5_Final failed");
             return 0;
         }
         else
@@ -119,7 +120,7 @@ static cell_t CryptoMd5File(IPluginContext *pContext, const cell_t *params)
     else
     {
         fs.close();
-        pContext->ThrowNativeError("File read failed %s", realpath);
+        pContext->ReportError("File read failed %s", realpath);
         return 0;
     }
 }
@@ -136,19 +137,19 @@ static cell_t CryptoSHA1(IPluginContext *pContext, const cell_t *params)
 
     if (!SHA1_Init(&ctx))
     {
-        pContext->ThrowNativeError("SHA1_Init failed");
+        pContext->ReportError("SHA1_Init failed");
         return 0;
     }
 
     if (!SHA1_Update(&ctx, buffer, std::strlen(buffer)))
     {
-        pContext->ThrowNativeError("SHA1_Update failed");
+        pContext->ReportError("SHA1_Update failed");
         return 0;
     }
 
     if (!SHA1_Final(md, &ctx))
     {
-        pContext->ThrowNativeError("SHA1_Final failed");
+        pContext->ReportError("SHA1_Final failed");
         return 0;
     }
 
@@ -185,7 +186,7 @@ static cell_t CryptoSHA1File(IPluginContext *pContext, const cell_t *params)
 
     if (!SHA1_Init(&ctx))
     {
-        pContext->ThrowNativeError("SHA1_Init failed");
+        pContext->ReportError("SHA1_Init failed");
         return 0;
     }
 
@@ -193,7 +194,7 @@ static cell_t CryptoSHA1File(IPluginContext *pContext, const cell_t *params)
 
     if (!fs.is_open())
     {
-        pContext->ThrowNativeError("Could not open file for SHA1 calculation: %s", realpath);
+        pContext->ReportError("Could not open file for SHA1 calculation: %s", realpath);
         return 0;
     }
 
@@ -203,7 +204,7 @@ static cell_t CryptoSHA1File(IPluginContext *pContext, const cell_t *params)
         if (!SHA1_Update(&ctx, fsbuf, fs.gcount()))
         {
             fs.close();
-            pContext->ThrowNativeError("SHA1_Update failed");
+            pContext->ReportError("SHA1_Update failed");
             return 0;
         }
     } while (fs);
@@ -213,7 +214,7 @@ static cell_t CryptoSHA1File(IPluginContext *pContext, const cell_t *params)
         fs.close();
         if (!SHA1_Final(md, &ctx))
         {
-            pContext->ThrowNativeError("SHA1_Final failed");
+            pContext->ReportError("SHA1_Final failed");
             return 0;
         }
         else
@@ -237,7 +238,7 @@ static cell_t CryptoSHA1File(IPluginContext *pContext, const cell_t *params)
     else
     {
         fs.close();
-        pContext->ThrowNativeError("File read failed %s", realpath);
+        pContext->ReportError("File read failed %s", realpath);
         return 0;
     }
 }
@@ -254,19 +255,19 @@ static cell_t CryptoSHA256(IPluginContext *pContext, const cell_t *params)
 
     if (!SHA256_Init(&ctx))
     {
-        pContext->ThrowNativeError("SHA256_Init failed");
+        pContext->ReportError("SHA256_Init failed");
         return 0;
     }
 
     if (!SHA256_Update(&ctx, buffer, std::strlen(buffer)))
     {
-        pContext->ThrowNativeError("SHA256_Update failed");
+        pContext->ReportError("SHA256_Update failed");
         return 0;
     }
 
     if (!SHA256_Final(md, &ctx))
     {
-        pContext->ThrowNativeError("SHA256_Final failed");
+        pContext->ReportError("SHA256_Final failed");
         return 0;
     }
 
@@ -303,7 +304,7 @@ static cell_t CryptoSHA256File(IPluginContext *pContext, const cell_t *params)
 
     if (!SHA256_Init(&ctx))
     {
-        pContext->ThrowNativeError("SHA256_Init failed");
+        pContext->ReportError("SHA256_Init failed");
         return 0;
     }
 
@@ -311,7 +312,7 @@ static cell_t CryptoSHA256File(IPluginContext *pContext, const cell_t *params)
 
     if (!fs.is_open())
     {
-        pContext->ThrowNativeError("Could not open file for SHA256 calculation: %s", realpath);
+        pContext->ReportError("Could not open file for SHA256 calculation: %s", realpath);
         return 0;
     }
 
@@ -321,7 +322,7 @@ static cell_t CryptoSHA256File(IPluginContext *pContext, const cell_t *params)
         if (!SHA256_Update(&ctx, fsbuf, fs.gcount()))
         {
             fs.close();
-            pContext->ThrowNativeError("SHA256_Update failed");
+            pContext->ReportError("SHA256_Update failed");
             return 0;
         }
     } while (fs);
@@ -331,7 +332,7 @@ static cell_t CryptoSHA256File(IPluginContext *pContext, const cell_t *params)
         fs.close();
         if (!SHA256_Final(md, &ctx))
         {
-            pContext->ThrowNativeError("SHA256_Final failed");
+            pContext->ReportError("SHA256_Final failed");
             return 0;
         }
         else
@@ -355,7 +356,7 @@ static cell_t CryptoSHA256File(IPluginContext *pContext, const cell_t *params)
     else
     {
         fs.close();
-        pContext->ThrowNativeError("File read failed %s", realpath);
+        pContext->ReportError("File read failed %s", realpath);
         return 0;
     }
 }
@@ -372,19 +373,19 @@ static cell_t CryptoSHA512(IPluginContext *pContext, const cell_t *params)
 
     if (!SHA512_Init(&ctx))
     {
-        pContext->ThrowNativeError("SHA512_Init failed");
+        pContext->ReportError("SHA512_Init failed");
         return 0;
     }
 
     if (!SHA512_Update(&ctx, buffer, std::strlen(buffer)))
     {
-        pContext->ThrowNativeError("SHA512_Update failed");
+        pContext->ReportError("SHA512_Update failed");
         return 0;
     }
 
     if (!SHA512_Final(md, &ctx))
     {
-        pContext->ThrowNativeError("SHA512_Final failed");
+        pContext->ReportError("SHA512_Final failed");
         return 0;
     }
 
@@ -421,7 +422,7 @@ static cell_t CryptoSHA512File(IPluginContext *pContext, const cell_t *params)
 
     if (!SHA512_Init(&ctx))
     {
-        pContext->ThrowNativeError("SHA512_Init failed");
+        pContext->ReportError("SHA512_Init failed");
         return 0;
     }
 
@@ -429,7 +430,7 @@ static cell_t CryptoSHA512File(IPluginContext *pContext, const cell_t *params)
 
     if (!fs.is_open())
     {
-        pContext->ThrowNativeError("Could not open file for SHA512 calculation: %s", realpath);
+        pContext->ReportError("Could not open file for SHA512 calculation: %s", realpath);
         return 0;
     }
 
@@ -439,7 +440,7 @@ static cell_t CryptoSHA512File(IPluginContext *pContext, const cell_t *params)
         if (!SHA512_Update(&ctx, fsbuf, fs.gcount()))
         {
             fs.close();
-            pContext->ThrowNativeError("SHA512_Update failed");
+            pContext->ReportError("SHA512_Update failed");
             return 0;
         }
     } while (fs);
@@ -449,7 +450,7 @@ static cell_t CryptoSHA512File(IPluginContext *pContext, const cell_t *params)
         fs.close();
         if (!SHA512_Final(md, &ctx))
         {
-            pContext->ThrowNativeError("SHA512_Final failed");
+            pContext->ReportError("SHA512_Final failed");
             return 0;
         }
         else
@@ -473,7 +474,7 @@ static cell_t CryptoSHA512File(IPluginContext *pContext, const cell_t *params)
     else
     {
         fs.close();
-        pContext->ThrowNativeError("File read failed %s", realpath);
+        pContext->ReportError("File read failed %s", realpath);
         return 0;
     }
 }
@@ -524,7 +525,7 @@ static cell_t CryptoCRC16File(IPluginContext *pContext, const cell_t *params)
 
     if (!fs.is_open())
     {
-        pContext->ThrowNativeError("Could not open file for CRC calculation: %s", realpath);
+        pContext->ReportError("Could not open file for CRC calculation: %s", realpath);
         return 0;
     }
 
@@ -560,7 +561,7 @@ static cell_t CryptoCRC16File(IPluginContext *pContext, const cell_t *params)
     else
     {
         fs.close();
-        pContext->ThrowNativeError("File read failed %s", realpath);
+        pContext->ReportError("File read failed %s", realpath);
         return 0;
     }
 }
@@ -611,7 +612,7 @@ static cell_t CryptoCRC32File(IPluginContext *pContext, const cell_t *params)
 
     if (!fs.is_open())
     {
-        pContext->ThrowNativeError("Could not open file for CRC calculation: %s", realpath);
+        pContext->ReportError("Could not open file for CRC calculation: %s", realpath);
         return 0;
     }
 
@@ -647,9 +648,58 @@ static cell_t CryptoCRC32File(IPluginContext *pContext, const cell_t *params)
     else
     {
         fs.close();
-        pContext->ThrowNativeError("File read failed %s", realpath);
+        pContext->ReportError("File read failed %s", realpath);
         return 0;
     }
+}
+
+static cell_t CryptoBase64Encode(IPluginContext *pContext, const cell_t *params)
+{
+    char *buffer;
+    pContext->LocalToString(params[2], &buffer);
+
+    std::string output;
+    output.resize(boost::beast::detail::base64::encoded_size(std::strlen(buffer)));
+    output.resize(boost::beast::detail::base64::encode(&output[0], buffer, std::strlen(buffer)));
+
+    if (params[4] > output.length())
+    {
+        pContext->StringToLocalUTF8(params[3], params[4], output.c_str(), nullptr);
+        //  - 1 is returned on success (the string output buffer is sufficient)
+        //  otherwise it is the minimum buffer length required
+        return -1;
+    }
+    else
+    {
+        // pContext->ReportError("The string output buffer is too small. minimum buffer length %d", output.length() + 1);
+        return output.length() + 1;
+    }
+}
+
+static cell_t CryptoBase64Decode(IPluginContext *pContext, const cell_t *params)
+{
+    char *buffer;
+    pContext->LocalToString(params[2], &buffer);
+
+    std::string output;
+    output.resize(boost::beast::detail::base64::decoded_size(std::strlen(buffer)));
+    auto result = boost::beast::detail::base64::decode(&output[0], buffer, std::strlen(buffer));
+    output.resize(result.first);
+
+    if (params[4] > output.length())
+    {
+        pContext->StringToLocalUTF8(params[3], params[4], output.c_str(), nullptr);
+        //  - 1 is returned on success (the string output buffer is sufficient)
+        //  otherwise it is the minimum buffer length required
+        return -1;
+    }
+    else
+    {
+        // pContext->ReportError("The string output buffer is too small. minimum buffer length %d", output.length() + 1);
+        return output.length() + 1;
+    }
+
+    return 1;
 }
 
 const sp_nativeinfo_t crypto_native[] = {
@@ -665,4 +715,6 @@ const sp_nativeinfo_t crypto_native[] = {
     {"Crypto.CRC16File", CryptoCRC16File},
     {"Crypto.CRC32", CryptoCRC32},
     {"Crypto.CRC32File", CryptoCRC32File},
+    {"Crypto.Base64Encode", CryptoBase64Encode},
+    {"Crypto.Base64Decode", CryptoBase64Decode},
     {nullptr, nullptr}};

@@ -29,7 +29,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	json_t *json;
 	if ((err = handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
-		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
+		pContext->ReportError("Invalid JSON handle %x (error %d)", hndl, err);
 		return nullptr;
 	}
 
@@ -47,7 +47,7 @@ static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 	{
 		json_decref(object);
 
-		pContext->ThrowNativeError("Could not create object handle (error %d)", err);
+		pContext->ReportError("Could not create object handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -79,7 +79,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_object_get(object, key);
 	if (value == nullptr)
 	{
-		pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		pContext->ReportError("Could not retrieve value for key '%s'", key);
 		return BAD_HANDLE;
 	}
 
@@ -88,7 +88,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, nullptr, &err);
 	if (hndlValue == BAD_HANDLE)
 	{
-		pContext->ThrowNativeError("Could not create value handle (error %d)", err);
+		pContext->ReportError("Could not create value handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -113,7 +113,8 @@ static cell_t GetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_object_get(object, key);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		pContext->ReportError("Could not retrieve value for key '%s'", key);
+		return 0;
 	}
 
 	return json_boolean_value(value);
@@ -133,7 +134,8 @@ static cell_t GetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 	json_t *value = json_object_get(object, key);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		pContext->ReportError("Could not retrieve value for key '%s'", key);
+		return 0;
 	}
 
 	return sp_ftoc(static_cast<float>(json_number_value(value)));
@@ -153,7 +155,8 @@ static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_object_get(object, key);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		pContext->ReportError("Could not retrieve value for key '%s'", key);
+		return 0;
 	}
 
 	return static_cast<cell_t>(json_integer_value(value));
@@ -225,7 +228,8 @@ static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_object_get(object, key);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		pContext->ReportError("Could not retrieve value for key '%s'", key);
+		return 0;
 	}
 
 	return json_is_null(value);
@@ -409,7 +413,7 @@ static cell_t CreateObjectKeys(IPluginContext *pContext, const cell_t *params)
 	{
 		delete keys;
 
-		pContext->ThrowNativeError("Could not create object keys handle (error %d)", err);
+		pContext->ReportError("Could not create object keys handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -425,7 +429,8 @@ static cell_t ReadObjectKey(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlKeys = static_cast<Handle_t>(params[1]);
 	if ((err = handlesys->ReadHandle(hndlKeys, htJSONObjectKeys, &sec, (void **)&keys)) != HandleError_None)
 	{
-		return pContext->ThrowNativeError("Invalid object keys handle %x (error %d)", hndlKeys, err);
+		pContext->ReportError("Invalid object keys handle %x (error %d)", hndlKeys, err);
+		return 0;
 	}
 
 	const char *key = keys->GetKey();
@@ -451,7 +456,7 @@ static cell_t CreateArray(IPluginContext *pContext, const cell_t *params)
 	{
 		json_decref(object);
 
-		pContext->ThrowNativeError("Could not create array handle.");
+		pContext->ReportError("Could not create array handle.");
 		return BAD_HANDLE;
 	}
 
@@ -482,7 +487,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
 		return BAD_HANDLE;
 	}
 
@@ -491,7 +496,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, nullptr, &err);
 	if (hndlValue == BAD_HANDLE)
 	{
-		pContext->ThrowNativeError("Could not create value handle (error %d)", err);
+		pContext->ReportError("Could not create value handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -515,7 +520,8 @@ static cell_t GetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
+		return 0;
 	}
 
 	return json_boolean_value(value);
@@ -534,7 +540,8 @@ static cell_t GetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
+		return 0;
 	}
 
 	return sp_ftoc(static_cast<float>(json_number_value(value)));
@@ -553,7 +560,8 @@ static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
+		return 0;
 	}
 
 	return static_cast<cell_t>(json_integer_value(value));
@@ -572,7 +580,8 @@ static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
+		return 0;
 	}
 
 	char result[20];
@@ -595,7 +604,8 @@ static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
+		return 0;
 	}
 
 	const char *result = json_string_value(value);
@@ -622,7 +632,8 @@ static cell_t IsArrayNullValue(IPluginContext *pContext, const cell_t *params)
 	json_t *value = json_array_get(object, index);
 	if (value == nullptr)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+		pContext->ReportError("Could not retrieve value at index %d", index);
+		return 0;
 	}
 
 	return json_is_null(value);
@@ -879,7 +890,7 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 	json_t *object = json_loads(buffer, flags, &error);
 	if (object == nullptr)
 	{
-		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
+		pContext->ReportError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 		return BAD_HANDLE;
 	}
 
@@ -890,7 +901,7 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 	{
 		json_decref(object);
 
-		pContext->ThrowNativeError("Could not create object handle (error %d)", err);
+		pContext->ReportError("Could not create object handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -911,7 +922,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 	json_t *object = json_load_file(realpath, flags, &error);
 	if (object == nullptr)
 	{
-		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
+		pContext->ReportError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 		return BAD_HANDLE;
 	}
 
@@ -922,7 +933,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 	{
 		json_decref(object);
 
-		pContext->ThrowNativeError("Could not create object handle (error %d)", err);
+		pContext->ReportError("Could not create object handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
