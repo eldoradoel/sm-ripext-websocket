@@ -6,6 +6,7 @@
 #include <ripext/json>
 #include <ripext/http>
 #include <ripext/websocket>
+#include <ripext/crypto>
 
 /**
  * Do not edit below this line!

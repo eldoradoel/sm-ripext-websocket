@@ -221,6 +221,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	sharesys->AddNatives(myself, http_natives);
 	sharesys->AddNatives(myself, json_natives);
 	sharesys->AddNatives(myself, websocket_natives);
+	sharesys->AddNatives(myself, crypto_native);
 	sharesys->RegisterLibrary(myself, "ripext");
 
 	/* Initialize cURL */

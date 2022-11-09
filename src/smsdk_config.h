@@ -29,8 +29,8 @@
 
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME             "REST in Pawn"
-#define SMEXT_CONF_DESCRIPTION      "Provides HTTP WEBSOCKET and JSON natives for plugins"
-#define SMEXT_CONF_VERSION          "2.3.0"
+#define SMEXT_CONF_DESCRIPTION      "Provides HTTP WEBSOCKET JSON and Crypto natives for plugins"
+#define SMEXT_CONF_VERSION          "2.4.0"
 #define SMEXT_CONF_AUTHOR           "Tsunami Dreae MINIO"
 #define SMEXT_CONF_URL              "https://github.com/eldoradoel/sm-ripext-websocket"
 #define SMEXT_CONF_LOGTAG           "RIPEXT"

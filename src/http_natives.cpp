@@ -715,4 +715,5 @@ const sp_nativeinfo_t http_natives[] =
 		{"HTTPResponse.Status.get", 				GetResponseStatus},
 		{"HTTPResponse.GetHeader", 					GetResponseHeader},
 
-		{nullptr, 									nullptr}};
+		{nullptr, 									nullptr}
+};

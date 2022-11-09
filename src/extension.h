@@ -239,5 +239,6 @@ extern HandleType_t htWebSocket;
 extern const sp_nativeinfo_t http_natives[];
 extern const sp_nativeinfo_t json_natives[];
 extern const sp_nativeinfo_t websocket_natives[];
+extern const sp_nativeinfo_t crypto_native[];
 
 #endif // _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_
