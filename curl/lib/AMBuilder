@@ -20,11 +20,12 @@ for cxx in builder.targets:
     'HAVE_CONFIG_H',
     'HTTP_ONLY',
     'NGHTTP2_STATICLIB',
-    '_WIN32_WINNT=0x0601'
   ]
 
   if binary.compiler.target.platform == 'linux':
     binary.compiler.defines += ['_GNU_SOURCE']
+  elif binary.compiler.target.platform == 'windows':
+    binary.compiler.defines += ['_WIN32_WINNT=0x0601']
   elif binary.compiler.target.platform == 'mac':
     mac_version, ignore, ignore = platform.mac_ver()
     mac_tuple = mac_version.split('.')
