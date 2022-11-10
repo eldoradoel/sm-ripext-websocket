@@ -66,10 +66,8 @@ for cxx in builder.targets:
       '-lrt',
       '-ldl',
       '-lpthread',
-      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libssl.a'),
-      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libcrypto.a'),
-      # os.path.join('/usr/lib/i386-linux-gnu', 'libssl.a'),
-      # os.path.join('/usr/lib/i386-linux-gnu', 'libcrypto.a'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libssl.a'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libcrypto.a'),
     ]
 
   elif binary.compiler.target.platform == 'windows':
@@ -81,8 +79,8 @@ for cxx in builder.targets:
       'userenv.lib',
       'ws2_32.lib',
       'crypt32.lib',
-      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libssl32MT.lib'),
-      os.path.join(builder.sourcePath, 'openssl', 'lib' , 'libcrypto32MT.lib'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libssl32MT.lib'),
+      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libcrypto32MT.lib'),
     ]
 
   Extension.extensions += [builder.Add(binary)]

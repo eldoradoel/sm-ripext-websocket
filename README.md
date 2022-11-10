@@ -22,6 +22,8 @@ Responses to WEBSOCKET and HTTP support both JSON and raw strings, and more type
 
 ### update jansson to [2.14]
 
+### update openssl to [1.1.1s]
+
 ### use openssl to replace mbedtls to solve response data limit to 16384 character.
 
 # Existing problems
