@@ -121,6 +121,7 @@ for cxx in builder.targets:
     'netrc.c',
     'non-ascii.c',
     'nonblock.c',
+    'noproxy.c',
     'openldap.c',
     'parsedate.c',
     'pingpong.c',
@@ -162,6 +163,7 @@ for cxx in builder.targets:
     'warnless.c',
     'wildcard.c',
     'x509asn1.c',
+    'ws.c',
 
     # LIB_VAUTH_CFILES
     'vauth/cleartext.c',

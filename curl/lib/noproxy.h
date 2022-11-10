@@ -1,5 +1,5 @@
-#ifndef HEADER_CURL_EASYIF_H
-#define HEADER_CURL_EASYIF_H
+#ifndef HEADER_CURL_NOPROXY_H
+#define HEADER_CURL_NOPROXY_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -23,15 +23,22 @@
  * SPDX-License-Identifier: curl
  *
  ***************************************************************************/
+#include "curl_setup.h"
 
-/*
- * Prototypes for library-wide functions provided by easy.c
- */
-CURLcode Curl_senddata(struct Curl_easy *data, const void *buffer,
-                       size_t buflen, ssize_t *n);
+#ifndef CURL_DISABLE_PROXY
 
-#ifdef CURLDEBUG
-CURL_EXTERN CURLcode curl_easy_perform_ev(struct Curl_easy *easy);
+#ifdef DEBUGBUILD
+
+UNITTEST bool Curl_cidr4_match(const char *ipv4,    /* 1.2.3.4 address */
+                               const char *network, /* 1.2.3.4 address */
+                               unsigned int bits);
+UNITTEST bool Curl_cidr6_match(const char *ipv6,
+                               const char *network,
+                               unsigned int bits);
 #endif
 
-#endif /* HEADER_CURL_EASYIF_H */
+bool Curl_check_noproxy(const char *name, const char *no_proxy);
+
+#endif
+
+#endif /* HEADER_CURL_NOPROXY_H */

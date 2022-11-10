@@ -12,7 +12,7 @@ Responses to WEBSOCKET and HTTP support both JSON and raw strings, and more type
 # Library update
 ### update libuv to [v1.44.2]
 
-### update libcurl to [v7.84.0]
+### update libcurl to [v7.86.0]
 
 ### update libnghttp2 to [v1.5.0]
 
