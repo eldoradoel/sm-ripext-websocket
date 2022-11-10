@@ -662,7 +662,7 @@ static cell_t CryptoBase64Encode(IPluginContext *pContext, const cell_t *params)
     output.resize(boost::beast::detail::base64::encoded_size(std::strlen(buffer)));
     output.resize(boost::beast::detail::base64::encode(&output[0], buffer, std::strlen(buffer)));
 
-    if (params[4] > output.length())
+    if ((size_t)params[4] > output.length())
     {
         pContext->StringToLocalUTF8(params[3], params[4], output.c_str(), nullptr);
         //  - 1 is returned on success (the string output buffer is sufficient)
@@ -686,7 +686,7 @@ static cell_t CryptoBase64Decode(IPluginContext *pContext, const cell_t *params)
     auto result = boost::beast::detail::base64::decode(&output[0], buffer, std::strlen(buffer));
     output.resize(result.first);
 
-    if (params[4] > output.length())
+    if ((size_t)params[4] > output.length())
     {
         pContext->StringToLocalUTF8(params[3], params[4], output.c_str(), nullptr);
         //  - 1 is returned on success (the string output buffer is sufficient)
