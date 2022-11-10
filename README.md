@@ -14,11 +14,13 @@ Responses to WEBSOCKET and HTTP support both JSON and raw strings, and more type
 
 ### update libcurl to [v7.84.0]
 
-### update libnghttp2 to [v1.49.0]
+### update libnghttp2 to [v1.5.0]
 
-### update zlib to [v1.2.12]
+### update zlib to [v1.2.13]
 
 ### update boost to [1.75.0]
+
+### update jansson to [2.14]
 
 ### use openssl to replace mbedtls to solve response data limit to 16384 character.
 
