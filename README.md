@@ -18,11 +18,11 @@ Responses to WEBSOCKET and HTTP support both JSON and raw strings, and more type
 
 ### update zlib to [v1.2.13]
 
-### update boost to [1.75.0]
+### update boost to [v1.75.0]
 
-### update jansson to [2.14]
+### update jansson to [v2.14]
 
-### update openssl to [1.1.1s]
+### update openssl to [v1.1.1s]
 
 ### use openssl to replace mbedtls to solve response data limit to 16384 character.
 
