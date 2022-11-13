@@ -18,7 +18,7 @@ Responses to WEBSOCKET and HTTP support both JSON and raw strings, and more type
 
 ### update zlib to [v1.2.13]
 
-### update boost to [v1.75.0]
+### update boost to [v1.79.0]
 
 ### update jansson to [v2.14]
 
