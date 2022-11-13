@@ -25,6 +25,7 @@ private:
     void on_write(beast::error_code ec, size_t bytes_transferred);
     void on_read(beast::error_code ec, size_t bytes_transferred);
     void on_close(beast::error_code ec);
+    bool IsOpen();
 
     std::unique_ptr<websocket::stream<beast::tcp_stream>> ws;
     std::unique_ptr<boost::asio::io_context::work> work;

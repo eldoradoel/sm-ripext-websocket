@@ -140,3 +140,8 @@ void websocket_connection::close()
 {
     this->ws->async_close(websocket::close_code::normal, beast::bind_front_handler(&websocket_connection::on_close, this));
 }
+
+bool websocket_connection::IsOpen()
+{
+    return this->ws->is_open();
+}

@@ -152,3 +152,8 @@ void websocket_connection_ssl::close()
 {
     this->ws->async_close(websocket::close_code::normal, beast::bind_front_handler(&websocket_connection_ssl::on_close, this));
 }
+
+bool websocket_connection_ssl::IsOpen()
+{
+    return this->ws->is_open();
+}

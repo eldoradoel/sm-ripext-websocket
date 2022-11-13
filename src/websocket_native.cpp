@@ -49,7 +49,7 @@ static cell_t native_Connect(IPluginContext *p_context, const cell_t *params)
     }
 
     connection->connect();
-    return 0;
+    return 1;
 }
 
 static cell_t native_Close(IPluginContext *p_context, const cell_t *params)
@@ -61,7 +61,7 @@ static cell_t native_Close(IPluginContext *p_context, const cell_t *params)
     }
 
     connection->close();
-    return 0;
+    return 1;
 }
 
 static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *params)
@@ -73,7 +73,7 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
         return 0;
     }
 
-    uint32_t callback_type = params[2];
+    auto callback_type = params[2];
     IPluginFunction *callback = p_context->GetFunctionById((funcid_t)params[3]);
     if (!callback)
     {
@@ -82,38 +82,28 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
     }
 
     cell_t data = params[4];
-    switch (callback_type)
-    {
-    case WebSocket_JSON:
-        connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size)
-                                      {
+
+    connection->set_read_callback([callback, hndl_websocket, p_context, data, callback_type](auto buffer, auto size)
+                                  {
         std::string message(reinterpret_cast<const char*>(buffer), size);
         free(buffer);
 
-            g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
+            g_RipExt.Defer([callback, hndl_websocket, message, p_context, data,callback_type]() {
 			    json_t *object = json_loads(message.data(), 0, nullptr);
 			    Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
 			    callback->PushCell(hndl_websocket);
-			    callback->PushCell(handle);
+                if(callback_type == WebSocket_JSON)
+                {
+                    callback->PushCell(handle);
+                }
+                else if(callback_type == Websocket_STRING)
+                {
+                    callback->PushString(message.data());
+                }
 			    callback->PushCell(data);
 			    callback->Execute(nullptr);
             }); });
-        break;
-    case Websocket_STRING:
-        connection->set_read_callback([callback, hndl_websocket, p_context, data](auto buffer, auto size)
-                                      {
-        std::string message(reinterpret_cast<const char*>(buffer), size);
-        free(buffer);
-
-            g_RipExt.Defer([callback, hndl_websocket, message, p_context, data]() {
-			    callback->PushCell(hndl_websocket);
-			    callback->PushString(message.data());
-			    callback->PushCell(data);
-			    callback->Execute(nullptr);
-            }); });
-        break;
-    }
-    return 0;
+    return 1;
 }
 
 static cell_t native_SetDisconnectCallback(IPluginContext *p_context, const cell_t *params)
@@ -141,7 +131,7 @@ static cell_t native_SetDisconnectCallback(IPluginContext *p_context, const cell
             callback->PushCell(data);
             callback->Execute(nullptr); }); });
 
-    return 0;
+    return 1;
 }
 
 static cell_t native_SetConnectCallback(IPluginContext *p_context, const cell_t *params)
@@ -169,7 +159,7 @@ static cell_t native_SetConnectCallback(IPluginContext *p_context, const cell_t 
             callback->PushCell(data);
             callback->Execute(nullptr); }); });
 
-    return 0;
+    return 1;
 }
 
 static cell_t native_Write(IPluginContext *p_context, const cell_t *params)
@@ -192,7 +182,7 @@ static cell_t native_Write(IPluginContext *p_context, const cell_t *params)
     result = json_dumps(object, 0);
 
     connection->write(boost::asio::buffer(result, strlen(result)));
-    return 0;
+    return 1;
 }
 
 static cell_t native_WriteString(IPluginContext *p_context, const cell_t *params)
@@ -208,7 +198,7 @@ static cell_t native_WriteString(IPluginContext *p_context, const cell_t *params
     p_context->LocalToString(params[2], &result);
 
     connection->write(boost::asio::buffer(result, strlen(result)));
-    return 0;
+    return 1;
 }
 
 static cell_t native_SetHeader(IPluginContext *p_context, const cell_t *params)
@@ -223,7 +213,7 @@ static cell_t native_SetHeader(IPluginContext *p_context, const cell_t *params)
     p_context->LocalToString(params[2], &header);
     p_context->LocalToString(params[3], &value);
     connection->set_header(std::string(header), std::string(value));
-    return 0;
+    return 1;
 }
 
 static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params)
@@ -284,15 +274,26 @@ static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params)
     }
 }
 
+static cell_t native_IsOpen(IPluginContext *p_context, const cell_t *params)
+{
+    websocket_connection_base *connection;
+    if (websocket_read_handle(params[1], p_context, &connection) != HandleError_None)
+    {
+        return 0;
+    }
+
+    return connection->IsOpen();
+}
+
 const sp_nativeinfo_t websocket_natives[] = {
-    {"WebSocket.WebSocket",             native_WebSocket},
-    {"WebSocket.Connect",               native_Connect},
-    {"WebSocket.SetHeader",             native_SetHeader},
-    {"WebSocket.Close",                 native_Close},
-    {"WebSocket.SetReadCallback",       native_SetReadCallback},
+    {"WebSocket.WebSocket", native_WebSocket},
+    {"WebSocket.Connect", native_Connect},
+    {"WebSocket.SetHeader", native_SetHeader},
+    {"WebSocket.Close", native_Close},
+    {"WebSocket.SetReadCallback", native_SetReadCallback},
     {"WebSocket.SetDisconnectCallback", native_SetDisconnectCallback},
-    {"WebSocket.SetConnectCallback",    native_SetConnectCallback},
-    {"WebSocket.Write",                 native_Write},
-    {"WebSocket.WriteString",           native_WriteString},
-    {nullptr,                           nullptr}
-};
+    {"WebSocket.SetConnectCallback", native_SetConnectCallback},
+    {"WebSocket.Write", native_Write},
+    {"WebSocket.WriteString", native_WriteString},
+    {"WebSocket.IsOpen", native_IsOpen},
+    {nullptr, nullptr}};

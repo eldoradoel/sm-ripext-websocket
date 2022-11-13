@@ -30,6 +30,7 @@ public:
     virtual void close() = 0;
     virtual void connect() = 0;
     virtual void write(boost::asio::const_buffer buffer) = 0;
+    virtual bool IsOpen() = 0;
 
 protected:
     std::unique_ptr<std::function<void(uint8_t *, std::size_t)>> read_callback;

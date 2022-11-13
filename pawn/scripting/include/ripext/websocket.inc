@@ -27,12 +27,13 @@ methodmap WebSocket < Handle {
     //                   [hostname] Support Domain or IP                    
     //                   For example ws://[hostname]:[port]?test1=1&test2=2 Or wss://[hostname]:[port]?test1=1&test2=2
     public native WebSocket(const char[] url);
-    public native void SetHeader(const char[] header, const char[] value);
-    public native void Connect();
-    public native void Close();
-    public native void SetReadCallback(WebSocket_Protocol protocol, WebSocket_ReadCallback callback, any data=0);
-    public native void SetConnectCallback(WebSocket_ConnectCallback callback, any data=0);
-    public native void SetDisconnectCallback(WebSocket_ConnectCallback callback, any data=0);
-    public native void Write(JSON json);
-    public native void WriteString(const char[] content);
+    public native bool SetHeader(const char[] header, const char[] value);
+    public native bool Connect();
+    public native bool Close();
+    public native bool SetReadCallback(WebSocket_Protocol protocol, WebSocket_ReadCallback callback, any data=0);
+    public native bool SetConnectCallback(WebSocket_ConnectCallback callback, any data=0);
+    public native bool SetDisconnectCallback(WebSocket_ConnectCallback callback, any data=0);
+    public native bool Write(JSON json);
+    public native bool WriteString(const char[] content);
+    public native bool IsOpen();
 }
