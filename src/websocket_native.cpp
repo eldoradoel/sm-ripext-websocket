@@ -89,11 +89,11 @@ static cell_t native_SetReadCallback(IPluginContext *p_context, const cell_t *pa
         free(buffer);
 
             g_RipExt.Defer([callback, hndl_websocket, message, p_context, data,callback_type]() {
-			    json_t *object = json_loads(message.data(), 0, nullptr);
-			    Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
 			    callback->PushCell(hndl_websocket);
                 if(callback_type == WebSocket_JSON)
                 {
+                    json_t *object = json_loads(message.data(), 0, nullptr);
+			        Handle_t handle = handlesys->CreateHandle(htJSON, object, p_context->GetIdentity(), myself->GetIdentity(), nullptr);
                     callback->PushCell(handle);
                 }
                 else if(callback_type == Websocket_STRING)
