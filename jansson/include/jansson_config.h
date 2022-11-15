@@ -2,7 +2,7 @@
 # include "jansson_config-linux.h"
 #elif defined(__APPLE__)
 # include "jansson_config-mac.h"
-#elif defined(WIN32)
+#elif defined(WIN32) || defined(WIN64)
 # include "jansson_config-windows.h"
 #endif
 

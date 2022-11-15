@@ -51,7 +51,7 @@ for cxx in builder.targets:
   if binary.compiler.family == 'gcc' or binary.compiler.family == 'clang':
     binary.compiler.cxxflags += ['-fno-rtti']
   elif binary.compiler.family == 'msvc':
-    binary.compiler.cxxflags += ['/GR-']
+    binary.compiler.cxxflags += ['/GR-', '/bigobj']
 
   binary.compiler.postlink += [
     libcurl[arch].binary,
@@ -66,9 +66,17 @@ for cxx in builder.targets:
       '-lrt',
       '-ldl',
       '-lpthread',
-      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libssl.a'),
-      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libcrypto.a'),
     ]
+    if arch == 'x86':
+      binary.compiler.postlink += [
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libssl.a'),
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libcrypto.a'),
+      ]
+    else:
+      binary.compiler.postlink += [
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x64', 'libssl.a'),
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x64', 'libcrypto.a'),
+      ]
 
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.postlink += [
@@ -79,8 +87,16 @@ for cxx in builder.targets:
       'userenv.lib',
       'ws2_32.lib',
       'crypt32.lib',
-      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libssl32MT.lib'),
-      os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libcrypto32MT.lib'),
     ]
+    if arch == 'x86':
+      binary.compiler.postlink += [
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libssl32MT.lib'),
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x86', 'libcrypto32MT.lib'),
+      ]
+    else:
+      binary.compiler.postlink += [
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x64', 'libssl64MT.lib'),
+        os.path.join(builder.sourcePath, 'openssl', 'lib', 'x64', 'libcrypto64MT.lib'),
+      ]
 
   Extension.extensions += [builder.Add(binary)]
