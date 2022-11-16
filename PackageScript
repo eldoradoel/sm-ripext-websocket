@@ -40,7 +40,7 @@ CopyFiles('pawn/scripting/include', 'addons/sourcemod/scripting/include',
   [ 'ripext.inc' ]
 )
 CopyFiles('pawn/scripting/include/ripext', 'addons/sourcemod/scripting/include/ripext',
-  [ 'http.inc', 'json.inc' , 'websocket.inc']
+  [ 'http.inc', 'json.inc' , 'websocket.inc', 'crypto.inc']
 )
 
 # GameData files
