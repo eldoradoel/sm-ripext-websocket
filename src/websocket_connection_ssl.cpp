@@ -15,8 +15,8 @@ void websocket_connection_ssl::connect()
     snprintf(s_port, sizeof(s_port), "%hu", this->port);
     tcp::resolver::query query(this->address.c_str(), s_port);
 
-    g_RipExt.LogMessage("Resolving %s", address.c_str());
     this->resolver->async_resolve(query, beast::bind_front_handler(&websocket_connection_ssl::on_resolve, this));
+    g_RipExt.LogMessage("Init Connect %s:%d", address.c_str(), this->port);
 }
 
 void websocket_connection_ssl::on_resolve(beast::error_code ec, tcp::resolver::results_type results)
@@ -89,6 +89,7 @@ void websocket_connection_ssl::on_handshake(beast::error_code ec)
     }
 
     this->ws->async_read(this->buffer, beast::bind_front_handler(&websocket_connection_ssl::on_read, this));
+    g_RipExt.LogMessage("On Handshaked %s:%d", address.c_str(), this->port);
 }
 
 void websocket_connection_ssl::on_write(beast::error_code ec, size_t bytes_transferred)

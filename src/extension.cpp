@@ -153,13 +153,18 @@ static int CurlSocketCallback(CURL *curl, curl_socket_t socket, int action, void
 
 static int CurlTimeoutCallback(CURLM *multi, long timeout_ms, void *userdata)
 {
-	if (timeout_ms == -1)
+	if (timeout_ms < 0)
 	{
 		uv_timer_stop(&g_Timeout);
-		return 0;
 	}
-
-	uv_timer_start(&g_Timeout, &PerformRequests, timeout_ms, 0);
+	else
+	{
+		if (timeout_ms == 0)
+		{
+			timeout_ms = 1; /* 0 means directly call socket_action, but we will do it in a bit */
+		}
+		uv_timer_start(&g_Timeout, &PerformRequests, timeout_ms, 0);
+	}
 	return 0;
 }
 

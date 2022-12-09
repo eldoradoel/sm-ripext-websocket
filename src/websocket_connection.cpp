@@ -11,12 +11,12 @@ websocket_connection::websocket_connection(std::string address, std::string endp
 
 void websocket_connection::connect()
 {
-    g_RipExt.LogMessage("Init Connect %s:%d", address.c_str(), this->port);
     char s_port[8];
     snprintf(s_port, sizeof(s_port), "%hu", this->port);
     tcp::resolver::query query(this->address.c_str(), s_port);
 
     this->resolver->async_resolve(query, beast::bind_front_handler(&websocket_connection::on_resolve, this));
+    g_RipExt.LogMessage("Init Connect %s:%d", address.c_str(), this->port);
 }
 
 void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::results_type results)
@@ -32,7 +32,6 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
     }
     beast::get_lowest_layer(*this->ws).expires_after(std::chrono::seconds(30));
     beast::get_lowest_layer(*this->ws).async_connect(results, beast::bind_front_handler(&websocket_connection::on_connect, this));
-    g_RipExt.LogMessage("On Resolved %s:%d", address.c_str(), this->port);
 }
 
 void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
@@ -54,7 +53,6 @@ void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::resul
                                                            { this->add_headers(req); }));
 
     this->ws->async_handshake(this->address, this->endpoint.c_str(), beast::bind_front_handler(&websocket_connection::on_handshake, this));
-    g_RipExt.LogMessage("On Connected %s:%d", address.c_str(), this->port);
 }
 
 void websocket_connection::on_handshake(beast::error_code ec)
