@@ -12,7 +12,7 @@ websocket_connection::websocket_connection(std::string address, std::string endp
 void websocket_connection::connect()
 {
     char s_port[8];
-    snprintf(s_port, sizeof(s_port), "%hu", this->port);
+    std::snprintf(s_port, sizeof(s_port), "%hu", this->port);
     tcp::resolver::query query(this->address.c_str(), s_port);
 
     this->resolver->async_resolve(query, beast::bind_front_handler(&websocket_connection::on_resolve, this));
@@ -23,7 +23,7 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
 {
     if (ec)
     {
-        g_RipExt.LogError("Error resolving %s: %s", this->address.c_str(), ec.message().c_str());
+        g_RipExt.LogError("Error resolving %s: %d %s", this->address.c_str(), ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
@@ -31,7 +31,7 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
         this->wsconnect = false;
         return;
     }
-    
+
     beast::get_lowest_layer(*this->ws).expires_after(std::chrono::seconds(30));
     beast::get_lowest_layer(*this->ws).async_connect(results, beast::bind_front_handler(&websocket_connection::on_connect, this));
 }
@@ -40,7 +40,7 @@ void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::resul
 {
     if (ec)
     {
-        g_RipExt.LogError("Error connecting to %s: %s", this->address.c_str(), ec.message().c_str());
+        g_RipExt.LogError("Error connecting to %s: %d %s", this->address.c_str(), ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
@@ -62,7 +62,7 @@ void websocket_connection::on_handshake(beast::error_code ec)
 {
     if (ec)
     {
-        g_RipExt.LogError("WebSocket Handshake Error: %s", ec.message().c_str());
+        g_RipExt.LogError("WebSocket Handshake Error: %d %s", ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
@@ -76,7 +76,7 @@ void websocket_connection::on_handshake(beast::error_code ec)
     {
         this->connect_callback->operator()();
     }
-    
+
     this->ws->async_read(this->buffer, beast::bind_front_handler(&websocket_connection::on_read, this));
     this->wsconnect = true;
     g_RipExt.LogMessage("On Handshaked %s:%d", address.c_str(), this->port);
@@ -86,7 +86,7 @@ void websocket_connection::on_write(beast::error_code ec, size_t bytes_transferr
 {
     if (ec)
     {
-        g_RipExt.LogError("WebSocket write error: %s", ec.message().c_str());
+        g_RipExt.LogError("WebSocket write error: %d %s", ec.value(), ec.message().c_str());
         return;
     }
 }
@@ -101,7 +101,7 @@ void websocket_connection::on_read(beast::error_code ec, size_t bytes_transferre
         }
         else
         {
-            g_RipExt.LogError("WebSocket read error: %s", ec.message().c_str());
+            g_RipExt.LogError("WebSocket read error: %d %s", ec.value(), ec.message().c_str());
             if (this->disconnect_callback)
             {
                 this->disconnect_callback->operator()();
@@ -127,7 +127,7 @@ void websocket_connection::on_close(beast::error_code ec)
 {
     if (ec)
     {
-        g_RipExt.LogError("WebSocket close error: %s", ec.message().c_str());
+        g_RipExt.LogError("WebSocket close error: %d %s", ec.value(), ec.message().c_str());
         if (this->pending_delete)
         {
             delete this;

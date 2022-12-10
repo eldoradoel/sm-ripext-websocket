@@ -12,7 +12,7 @@ websocket_connection_ssl::websocket_connection_ssl(std::string address, std::str
 void websocket_connection_ssl::connect()
 {
     char s_port[8];
-    snprintf(s_port, sizeof(s_port), "%hu", this->port);
+    std::snprintf(s_port, sizeof(s_port), "%hu", this->port);
     tcp::resolver::query query(this->address.c_str(), s_port);
 
     this->resolver->async_resolve(query, beast::bind_front_handler(&websocket_connection_ssl::on_resolve, this));
@@ -23,12 +23,12 @@ void websocket_connection_ssl::on_resolve(beast::error_code ec, tcp::resolver::r
 {
     if (ec)
     {
-        g_RipExt.LogError("Error resolving %s: %s", this->address.c_str(), ec.message().c_str());
+        g_RipExt.LogError("Error resolving %s: %d %s", this->address.c_str(), ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
         }
-        this->wsconnect = false; 
+        this->wsconnect = false;
         return;
     }
 
@@ -40,7 +40,7 @@ void websocket_connection_ssl::on_connect(beast::error_code ec, tcp::resolver::r
 {
     if (ec)
     {
-        g_RipExt.LogError("Error connecting to %s: %s", this->address.c_str(), ec.message().c_str());
+        g_RipExt.LogError("Error connecting to %s: %d %s", this->address.c_str(), ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
@@ -54,7 +54,7 @@ void websocket_connection_ssl::on_connect(beast::error_code ec, tcp::resolver::r
     if (!SSL_set_tlsext_host_name(this->ws->next_layer().native_handle(), host.c_str()))
     {
         ec = beast::error_code(static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category());
-        g_RipExt.LogError("SSL Error: %s", ec.message().c_str());
+        g_RipExt.LogError("SSL Error: %d %s", ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
@@ -73,7 +73,7 @@ void websocket_connection_ssl::on_ssl_handshake(beast::error_code ec)
 {
     if (ec)
     {
-        g_RipExt.LogError("SSL Handshake Error: %s", ec.message().c_str());
+        g_RipExt.LogError("SSL Handshake Error: %d %s", ec.value(), ec.message().c_str());
         if (this->disconnect_callback)
         {
             this->disconnect_callback->operator()();
@@ -137,7 +137,7 @@ void websocket_connection_ssl::on_read(beast::error_code ec, size_t bytes_transf
         }
         else
         {
-            g_RipExt.LogError("WebSocket read error: %s", ec.message().c_str());
+            g_RipExt.LogError("WebSocket read error: %d %s", ec.value(), ec.message().c_str());
             if (this->disconnect_callback)
             {
                 this->disconnect_callback->operator()();
