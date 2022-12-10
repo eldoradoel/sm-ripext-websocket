@@ -28,8 +28,10 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
         {
             this->disconnect_callback->operator()();
         }
+        this->wsconnect = false;
         return;
     }
+    
     beast::get_lowest_layer(*this->ws).expires_after(std::chrono::seconds(30));
     beast::get_lowest_layer(*this->ws).async_connect(results, beast::bind_front_handler(&websocket_connection::on_connect, this));
 }
@@ -43,6 +45,7 @@ void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::resul
         {
             this->disconnect_callback->operator()();
         }
+        this->wsconnect = false;
         return;
     }
     beast::get_lowest_layer(*this->ws).expires_never();
@@ -64,6 +67,7 @@ void websocket_connection::on_handshake(beast::error_code ec)
         {
             this->disconnect_callback->operator()();
         }
+        this->wsconnect = false;
         return;
     }
 
@@ -102,6 +106,7 @@ void websocket_connection::on_read(beast::error_code ec, size_t bytes_transferre
             {
                 this->disconnect_callback->operator()();
             }
+            this->wsconnect = false;
         }
         return;
     }

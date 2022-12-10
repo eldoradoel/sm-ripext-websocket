@@ -24,6 +24,11 @@ void websocket_connection_ssl::on_resolve(beast::error_code ec, tcp::resolver::r
     if (ec)
     {
         g_RipExt.LogError("Error resolving %s: %s", this->address.c_str(), ec.message().c_str());
+        if (this->disconnect_callback)
+        {
+            this->disconnect_callback->operator()();
+        }
+        this->wsconnect = false; 
         return;
     }
 
@@ -36,6 +41,11 @@ void websocket_connection_ssl::on_connect(beast::error_code ec, tcp::resolver::r
     if (ec)
     {
         g_RipExt.LogError("Error connecting to %s: %s", this->address.c_str(), ec.message().c_str());
+        if (this->disconnect_callback)
+        {
+            this->disconnect_callback->operator()();
+        }
+        this->wsconnect = false;
         return;
     }
 
@@ -45,6 +55,11 @@ void websocket_connection_ssl::on_connect(beast::error_code ec, tcp::resolver::r
     {
         ec = beast::error_code(static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category());
         g_RipExt.LogError("SSL Error: %s", ec.message().c_str());
+        if (this->disconnect_callback)
+        {
+            this->disconnect_callback->operator()();
+        }
+        this->wsconnect = false;
     }
 
     this->ws->next_layer().async_handshake(
@@ -59,6 +74,11 @@ void websocket_connection_ssl::on_ssl_handshake(beast::error_code ec)
     if (ec)
     {
         g_RipExt.LogError("SSL Handshake Error: %s", ec.message().c_str());
+        if (this->disconnect_callback)
+        {
+            this->disconnect_callback->operator()();
+        }
+        this->wsconnect = false;
         return;
     }
     beast::get_lowest_layer(*this->ws).expires_never();
@@ -79,6 +99,11 @@ void websocket_connection_ssl::on_handshake(beast::error_code ec)
     if (ec)
     {
         g_RipExt.LogError("WebSocket Handshake Error: %s", ec.message().c_str());
+        if (this->disconnect_callback)
+        {
+            this->disconnect_callback->operator()();
+        }
+        this->wsconnect = false;
         return;
     }
 
@@ -117,6 +142,7 @@ void websocket_connection_ssl::on_read(beast::error_code ec, size_t bytes_transf
             {
                 this->disconnect_callback->operator()();
             }
+            this->wsconnect = false;
         }
         return;
     }
