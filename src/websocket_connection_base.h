@@ -26,11 +26,12 @@ public:
     void set_header(std::string key, std::string value);
     void add_headers(websocket::request_type &req);
     void destroy();
+    bool wsopen();
 
     virtual void close() = 0;
     virtual void connect() = 0;
     virtual void write(boost::asio::const_buffer buffer) = 0;
-    virtual bool IsOpen() = 0;
+    virtual bool socketopen() = 0;
 
 protected:
     std::unique_ptr<std::function<void(uint8_t *, std::size_t)>> read_callback;
@@ -44,4 +45,5 @@ protected:
     std::string endpoint;
     uint16_t port;
     bool pending_delete = false;
+    bool wsconnect = false;
 };

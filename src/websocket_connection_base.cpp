@@ -48,3 +48,8 @@ void websocket_connection_base::destroy()
     this->pending_delete = true;
     this->close();
 }
+
+bool websocket_connection_base::wsopen()
+{
+    return this->wsconnect;
+}

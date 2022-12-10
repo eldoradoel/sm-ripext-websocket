@@ -35,5 +35,8 @@ methodmap WebSocket < Handle {
     public native bool SetDisconnectCallback(WebSocket_ConnectCallback callback, any data=0);
     public native bool Write(JSON json);
     public native bool WriteString(const char[] content);
-    public native bool IsOpen();
+    //  Returns whether the tcp stream is open
+    public native bool SocketOpen();
+    //  Returns the websocket connect status
+    public native bool WsOpen();
 }

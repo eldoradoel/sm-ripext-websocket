@@ -274,7 +274,7 @@ static cell_t native_WebSocket(IPluginContext *p_context, const cell_t *params)
     }
 }
 
-static cell_t native_IsOpen(IPluginContext *p_context, const cell_t *params)
+static cell_t native_SocketOpen(IPluginContext *p_context, const cell_t *params)
 {
     websocket_connection_base *connection;
     if (websocket_read_handle(params[1], p_context, &connection) != HandleError_None)
@@ -282,7 +282,18 @@ static cell_t native_IsOpen(IPluginContext *p_context, const cell_t *params)
         return 0;
     }
 
-    return connection->IsOpen();
+    return connection->socketopen();
+}
+
+static cell_t native_WsOpen(IPluginContext *p_context, const cell_t *params)
+{
+    websocket_connection_base *connection;
+    if (websocket_read_handle(params[1], p_context, &connection) != HandleError_None)
+    {
+        return 0;
+    }
+
+    return connection->wsopen();
 }
 
 const sp_nativeinfo_t websocket_natives[] = {
@@ -295,5 +306,6 @@ const sp_nativeinfo_t websocket_natives[] = {
     {"WebSocket.SetConnectCallback", native_SetConnectCallback},
     {"WebSocket.Write", native_Write},
     {"WebSocket.WriteString", native_WriteString},
-    {"WebSocket.IsOpen", native_IsOpen},
+    {"WebSocket.SocketOpen", native_SocketOpen},
+    {"WebSocket.WsOpen", native_WsOpen},
     {nullptr, nullptr}};

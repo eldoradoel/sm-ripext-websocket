@@ -89,6 +89,7 @@ void websocket_connection_ssl::on_handshake(beast::error_code ec)
     }
 
     this->ws->async_read(this->buffer, beast::bind_front_handler(&websocket_connection_ssl::on_read, this));
+    this->wsconnect = true;
     g_RipExt.LogMessage("On Handshaked %s:%d", address.c_str(), this->port);
 }
 
@@ -142,6 +143,7 @@ void websocket_connection_ssl::on_close(beast::error_code ec)
             delete this;
         }
     }
+    this->wsconnect = false;
 }
 
 void websocket_connection_ssl::write(boost::asio::const_buffer buffer)
@@ -154,7 +156,7 @@ void websocket_connection_ssl::close()
     this->ws->async_close(websocket::close_code::normal, beast::bind_front_handler(&websocket_connection_ssl::on_close, this));
 }
 
-bool websocket_connection_ssl::IsOpen()
+bool websocket_connection_ssl::socketopen()
 {
     return this->ws->is_open();
 }
