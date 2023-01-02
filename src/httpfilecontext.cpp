@@ -155,7 +155,7 @@ void HTTPFileContext::OnCompleted()
 void PushProgressInSourceModFrame(void *data)
 {
 	HTTPFileContext *context = (HTTPFileContext *)data;
-	if(context != nullptr)
+	if (context != nullptr && (context->getdltotal() != 0 || context->getultotal() != 0))
 	{
 		context->getProgressForward()->PushCell(context->getIsuplaod());
 		context->getProgressForward()->PushCell((cell_t)context->getdltotal());
