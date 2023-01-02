@@ -386,7 +386,8 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 	pContext->LocalToString(params[2], &path);
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
-	cell_t value = params[4];
+	IPluginFunction *progresscallback = pContext->GetFunctionById(params[4]);
+	cell_t value = params[5];
 
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
@@ -395,7 +396,14 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 		return 0;
 	}
 
-	request->DownloadFile(path, forward, value);
+	IChangeableForward *progressforward = forwards->CreateForwardEx(nullptr, ET_Ignore, 5, nullptr, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+	if (progressforward == nullptr || !progressforward->AddFunction(progresscallback))
+	{
+		pContext->ReportError("Could not create progresscallback forward.");
+		return 0;
+	}
+
+	request->DownloadFile(path, forward, progressforward ,value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -416,7 +424,8 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &path);
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
-	cell_t value = params[4];
+	IPluginFunction *progresscallback = pContext->GetFunctionById(params[4]);
+	cell_t value = params[5];
 
 	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
 	if (forward == nullptr || !forward->AddFunction(callback))
@@ -425,8 +434,15 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 		return 0;
 	}
 
-	request->UploadFile(path, forward, value);
+	IChangeableForward *progressforward = forwards->CreateForwardEx(nullptr, ET_Ignore, 5, nullptr, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+	if (progressforward == nullptr || !progressforward->AddFunction(progresscallback))
+	{
+		pContext->ReportError("Could not create progresscallback forward.");
+		return 0;
+	}
 
+	request->UploadFile(path, forward, progressforward ,value);
+	
 	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;

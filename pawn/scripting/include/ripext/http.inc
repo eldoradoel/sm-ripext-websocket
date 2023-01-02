@@ -76,6 +76,15 @@ typeset HTTPFileCallback
 	function void (HTTPStatus status, any value, const char[] error);
 };
 
+typeset HTTPFileProgressCallback
+{
+	// dltotal is the total number of bytes libcurl expects to download in this transfer
+	// dlnow is the number of bytes downloaded so far
+	// ultotal is the total number of bytes libcurl expects to upload in this transfer
+	// ulnow is the number of bytes uploaded so far
+	function void (bool isUpload, int dltotal, int dlnow, int ultotal, int ulnow);
+};
+
 methodmap HTTPRequest < Handle
 {
 	// Creates an HTTP request.
@@ -188,7 +197,7 @@ methodmap HTTPRequest < Handle
 	// @param path       File path to write to.
 	// @param callback   A function to use as a callback when the download has finished.
 	// @param value      Optional value to pass to the callback function.
-	public native void DownloadFile(const char[] path, HTTPFileCallback callback, any value = 0);
+	public native void DownloadFile(const char[] path, HTTPFileCallback callback, HTTPFileProgressCallback progresscallback, any value = 0);
 
 	// Uploads a file.
 	//
@@ -198,7 +207,7 @@ methodmap HTTPRequest < Handle
 	// @param path       File path to read from.
 	// @param callback   A function to use as a callback when the upload has finished.
 	// @param value      Optional value to pass to the callback function.
-	public native void UploadFile(const char[] path, HTTPFileCallback callback, any value = 0);
+	public native void UploadFile(const char[] path, HTTPFileCallback callback, HTTPFileProgressCallback progresscallback, any value = 0);
 
 	// Performs an HTTP POST request with form data.
 	//

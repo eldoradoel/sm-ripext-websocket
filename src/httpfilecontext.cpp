@@ -27,11 +27,18 @@ static size_t IgnoreResponseBody(void *body, size_t size, size_t nmemb, void *us
 	return size * nmemb;
 }
 
+static size_t progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
+{
+	HTTPFileContext *context = (HTTPFileContext *)clientp;
+	context->setProgressData(dltotal, dlnow, ultotal, ulnow);
+	return 0;
+}
+
 HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
-								 struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+								 struct curl_slist *headers, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value,
 								 long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 								 bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
-	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
+	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), progressForward(progressForward), value(value),
 	  connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
 	  maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {
@@ -40,6 +47,7 @@ HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const st
 HTTPFileContext::~HTTPFileContext()
 {
 	forwards->ReleaseForward(forward);
+	forwards->ReleaseForward(progressForward);
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
@@ -69,6 +77,7 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_READDATA, file);
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, fread);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &IgnoreResponseBody);
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)FileSize(file));
 	}
@@ -91,6 +100,9 @@ bool HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
+	curl_easy_setopt(curl, CURLOPT_XFERINFODATA, this);
+	curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &progress_callback);
+	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
 
 	if (maxRecvSpeed > 0)
 	{
@@ -138,6 +150,33 @@ void HTTPFileContext::OnCompleted()
 	forward->PushCell(value);
 	forward->PushString(error);
 	forward->Execute(nullptr);
+}
+
+void PushProgressInSourceModFrame(void *data)
+{
+	HTTPFileContext *context = (HTTPFileContext *)data;
+	if(context != nullptr)
+	{
+		context->getProgressForward()->PushCell(context->getIsuplaod());
+		context->getProgressForward()->PushCell((cell_t)context->getdltotal());
+		context->getProgressForward()->PushCell((cell_t)context->getdlnow());
+		context->getProgressForward()->PushCell((cell_t)context->getultotal());
+		context->getProgressForward()->PushCell((cell_t)context->getulnow());
+		context->getProgressForward()->Execute(nullptr);
+	}
+}
+
+void HTTPFileContext::setProgressData(curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
+{
+	this->dltotal = dltotal;
+	this->dlnow = dlnow;
+	this->ultotal = ultotal;
+	this->ulnow = ulnow;
+	if (progressForward->GetFunctionCount() == 0)
+	{
+		return;
+	}
+	smutils->AddFrameAction(&PushProgressInSourceModFrame, (void *)this);
 }
 
 off_t FileSize(FILE *fd)

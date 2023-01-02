@@ -39,23 +39,23 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 	g_RipExt.AddRequestToQueue(context);
 }
 
-void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, cell_t value)
+void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value)
 {
 	SetHeader("Accept", "*/*");
 	SetHeader("Content-Type", "application/octet-stream");
 
-	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, value,
+	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, progressForward, value,
 												   connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
-void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell_t value)
+void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value)
 {
 	SetHeader("Accept", "*/*");
 	SetHeader("Content-Type", "application/octet-stream");
 
-	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, value,
+	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, progressForward, value,
 												   connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
