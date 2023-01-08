@@ -29,7 +29,7 @@ class HTTPFileContext : public IHTTPContext
 {
 public:
 	HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
-					struct curl_slist *headers, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value,
+					struct curl_slist *headers, IPluginFunction *callback, IPluginFunction *progressCallback, cell_t value,
 					long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 					bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy);
 	~HTTPFileContext();
@@ -38,7 +38,7 @@ public: // IHTTPContext
 	bool InitCurl();
 	void OnCompleted();
 	void setProgressData(curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
-	IChangeableForward *getProgressForward() { return progressForward; };
+	IPluginFunction *getProgressFunction() { return progressFunction; };
 	bool getIsuplaod() { return isUpload; };
 	curl_off_t getdltotal() { return dltotal; };
 	curl_off_t getdlnow() { return dlnow; };
@@ -56,8 +56,8 @@ private:
 	const std::string url;
 	const std::string path;
 	struct curl_slist *headers;
-	IChangeableForward *forward;
-	IChangeableForward *progressForward;
+	IPluginFunction *callback;
+	IPluginFunction *progressFunction;
 	cell_t value;
 	char error[CURL_ERROR_SIZE] = {'\0'};
 	long connectTimeout;

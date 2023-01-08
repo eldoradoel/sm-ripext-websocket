@@ -35,10 +35,10 @@ static size_t progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dl
 }
 
 HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
-								 struct curl_slist *headers, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value,
+								 struct curl_slist *headers, IPluginFunction *callback, IPluginFunction *progressFunction, cell_t value,
 								 long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 								 bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
-	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), progressForward(progressForward), value(value),
+	: isUpload(isUpload), url(url), path(path), headers(headers), callback(callback), progressFunction(progressFunction), value(value),
 	  connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
 	  maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {
@@ -46,9 +46,6 @@ HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const st
 
 HTTPFileContext::~HTTPFileContext()
 {
-	forwards->ReleaseForward(forward);
-	forwards->ReleaseForward(progressForward);
-
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 }
@@ -138,7 +135,7 @@ void HTTPFileContext::OnCompleted()
 	fclose(file);
 
 	/* Return early if the plugin was unloaded while the thread was running */
-	if (forward->GetFunctionCount() == 0)
+	if (!callback->IsRunnable())
 	{
 		return;
 	}
@@ -146,10 +143,10 @@ void HTTPFileContext::OnCompleted()
 	long status;
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
 
-	forward->PushCell(status);
-	forward->PushCell(value);
-	forward->PushString(error);
-	forward->Execute(nullptr);
+	callback->PushCell(status);
+	callback->PushCell(value);
+	callback->PushString(error);
+	callback->Execute(nullptr);
 }
 
 void PushProgressInSourceModFrame(void *data)
@@ -157,12 +154,13 @@ void PushProgressInSourceModFrame(void *data)
 	HTTPFileContext *context = (HTTPFileContext *)data;
 	if (context != nullptr && (context->getdltotal() != 0 || context->getultotal() != 0))
 	{
-		context->getProgressForward()->PushCell(context->getIsuplaod());
-		context->getProgressForward()->PushCell((cell_t)context->getdltotal());
-		context->getProgressForward()->PushCell((cell_t)context->getdlnow());
-		context->getProgressForward()->PushCell((cell_t)context->getultotal());
-		context->getProgressForward()->PushCell((cell_t)context->getulnow());
-		context->getProgressForward()->Execute(nullptr);
+		IPluginFunction *callback = context->getProgressFunction();
+		callback->PushCell(context->getIsuplaod());
+		callback->PushCell((cell_t)context->getdltotal());
+		callback->PushCell((cell_t)context->getdlnow());
+		callback->PushCell((cell_t)context->getultotal());
+		callback->PushCell((cell_t)context->getulnow());
+		callback->Execute(nullptr);
 	}
 }
 
@@ -172,7 +170,7 @@ void HTTPFileContext::setProgressData(curl_off_t dltotal, curl_off_t dlnow, curl
 	this->dlnow = dlnow;
 	this->ultotal = ultotal;
 	this->ulnow = ulnow;
-	if (progressForward->GetFunctionCount() == 0)
+	if (!progressFunction->IsRunnable())
 	{
 		return;
 	}

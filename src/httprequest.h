@@ -29,10 +29,10 @@ class HTTPRequest
 public:
 	HTTPRequest(const std::string &url);
 
-	void Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value);
-	void DownloadFile(const char *path, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value);
-	void UploadFile(const char *path, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value);
-	void PostForm(IChangeableForward *forward, cell_t value);
+	void Perform(const char *method, json_t *data, IPluginFunction *callback, cell_t value);
+	void DownloadFile(const char *path, IPluginFunction *callback, IPluginFunction *progressCallback, cell_t value);
+	void UploadFile(const char *path, IPluginFunction *callback, IPluginFunction *progressCallback, cell_t value);
+	void PostForm(IPluginFunction *callback, cell_t value);
 
 	const std::string BuildURL() const;
 	void AppendQueryParam(const char *name, const char *value);

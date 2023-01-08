@@ -80,10 +80,10 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 }
 
 HTTPRequestContext::HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
-									   struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+									   struct curl_slist *headers, IPluginFunction *callback, cell_t value,
 									   long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 									   bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
-	: method(method), url(url), headers(headers), forward(forward), value(value),
+	: method(method), url(url), headers(headers), callback(callback), value(value),
 	  connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
 	  maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {
@@ -96,8 +96,6 @@ HTTPRequestContext::HTTPRequestContext(const std::string &method, const std::str
 
 HTTPRequestContext::~HTTPRequestContext()
 {
-	forwards->ReleaseForward(forward);
-
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 	free(body);
@@ -186,7 +184,7 @@ bool HTTPRequestContext::InitCurl()
 void HTTPRequestContext::OnCompleted()
 {
 	/* Return early if the plugin was unloaded while the thread was running */
-	if (forward->GetFunctionCount() == 0)
+	if (!callback->IsRunnable())
 	{
 		return;
 	}
@@ -202,10 +200,10 @@ void HTTPRequestContext::OnCompleted()
 		return;
 	}
 
-	forward->PushCell(hndlResponse);
-	forward->PushCell(value);
-	forward->PushString(error);
-	forward->Execute(nullptr);
+	callback->PushCell(hndlResponse);
+	callback->PushCell(value);
+	callback->PushString(error);
+	callback->Execute(nullptr);
 
 	handlesys->FreeHandle(hndlResponse, &sec);
 	handlesys->FreeHandle(response.hndlData, &sec);
