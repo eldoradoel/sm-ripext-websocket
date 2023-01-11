@@ -31,42 +31,42 @@ HTTPRequest::HTTPRequest(const std::string &url)
 	SetHeader("Content-Type", "application/json");
 }
 
-void HTTPRequest::Perform(const char *method, json_t *data, IPluginFunction *callback, cell_t value)
+void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
 {
-	HTTPRequestContext *context = new HTTPRequestContext(method, BuildURL(), data, BuildHeaders(), callback, value,
+	HTTPRequestContext *context = new HTTPRequestContext(method, BuildURL(), data, BuildHeaders(), forward, value,
 														 connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
-void HTTPRequest::DownloadFile(const char *path, IPluginFunction *callback, IPluginFunction *progressFunction, cell_t value)
+void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value)
 {
 	SetHeader("Accept", "*/*");
 	SetHeader("Content-Type", "application/octet-stream");
 
-	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), callback, progressFunction, value,
+	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, progressForward, value,
 												   connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
-void HTTPRequest::UploadFile(const char *path, IPluginFunction *callback, IPluginFunction *progressFunction, cell_t value)
+void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, IChangeableForward *progressForward, cell_t value)
 {
 	SetHeader("Accept", "*/*");
 	SetHeader("Content-Type", "application/octet-stream");
 
-	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), callback, progressFunction, value,
+	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, progressForward, value,
 												   connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
-void HTTPRequest::PostForm(IPluginFunction *callback, cell_t value)
+void HTTPRequest::PostForm(IChangeableForward *forward, cell_t value)
 {
 	SetHeader("Accept", "application/json");
 	SetHeader("Content-Type", "application/x-www-form-urlencoded");
 
-	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders(), callback, value,
+	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders(), forward, value,
 												   connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password, proxy);
 
 	g_RipExt.AddRequestToQueue(context);

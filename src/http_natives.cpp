@@ -232,7 +232,14 @@ static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
 	cell_t value = params[3];
 
-	request->Perform("GET", nullptr, callback, value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	request->Perform("GET", nullptr, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -258,7 +265,14 @@ static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	request->Perform("POST", data, callback, value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	request->Perform("POST", data, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -284,7 +298,14 @@ static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	request->Perform("PUT", data, callback, value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	request->Perform("PUT", data, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -310,7 +331,14 @@ static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	request->Perform("PATCH", data, callback, value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	request->Perform("PATCH", data, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -330,7 +358,14 @@ static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *param
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
 	cell_t value = params[3];
 
-	request->Perform("DELETE", nullptr, callback, value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	request->Perform("DELETE", nullptr, forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -354,7 +389,21 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 	IPluginFunction *progresscallback = pContext->GetFunctionById(params[4]);
 	cell_t value = params[5];
 
-	request->DownloadFile(path, callback, progresscallback ,value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	IChangeableForward *progressforward = forwards->CreateForwardEx(nullptr, ET_Ignore, 5, nullptr, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+	if (progressforward == nullptr || !progressforward->AddFunction(progresscallback))
+	{
+		pContext->ReportError("Could not create progresscallback forward.");
+		return 0;
+	}
+
+	request->DownloadFile(path, forward, progressforward ,value);
 
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -378,7 +427,21 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *progresscallback = pContext->GetFunctionById(params[4]);
 	cell_t value = params[5];
 
-	request->UploadFile(path, callback, progresscallback ,value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	IChangeableForward *progressforward = forwards->CreateForwardEx(nullptr, ET_Ignore, 5, nullptr, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+	if (progressforward == nullptr || !progressforward->AddFunction(progresscallback))
+	{
+		pContext->ReportError("Could not create progresscallback forward.");
+		return 0;
+	}
+
+	request->UploadFile(path, forward, progressforward ,value);
 	
 	handlesys->FreeHandle(params[1], &sec);
 
@@ -398,7 +461,14 @@ static cell_t PerformPostForm(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
 	cell_t value = params[3];
 
-	request->PostForm(callback, value);
+	IChangeableForward *forward = forwards->CreateForwardEx(nullptr, ET_Ignore, 3, nullptr, Param_Cell, Param_Cell, Param_String);
+	if (forward == nullptr || !forward->AddFunction(callback))
+	{
+		pContext->ReportError("Could not create forward.");
+		return 0;
+	}
+
+	request->PostForm(forward, value);
 
 	handlesys->FreeHandle(params[1], &sec);
 

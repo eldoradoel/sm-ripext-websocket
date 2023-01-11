@@ -68,10 +68,10 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 }
 
 HTTPFormContext::HTTPFormContext(const std::string &url, const std::string &formData,
-								 struct curl_slist *headers, IPluginFunction *callback, cell_t value,
+								 struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 								 long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 								 bool useBasicAuth, const std::string &username, const std::string &password, const std::string &proxy)
-	: url(url), formData(formData), headers(headers), callback(callback), value(value),
+	: url(url), formData(formData), headers(headers), forward(forward), value(value),
 	  connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
 	  maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password), proxy(proxy)
 {
@@ -79,6 +79,8 @@ HTTPFormContext::HTTPFormContext(const std::string &url, const std::string &form
 
 HTTPFormContext::~HTTPFormContext()
 {
+	forwards->ReleaseForward(forward);
+
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 	free(response.body);
@@ -145,7 +147,7 @@ bool HTTPFormContext::InitCurl()
 void HTTPFormContext::OnCompleted()
 {
 	/* Return early if the plugin was unloaded while the thread was running */
-	if (!callback->IsRunnable())
+	if (forward->GetFunctionCount() == 0)
 	{
 		return;
 	}
@@ -161,10 +163,10 @@ void HTTPFormContext::OnCompleted()
 		return;
 	}
 
-	callback->PushCell(hndlResponse);
-	callback->PushCell(value);
-	callback->PushString(error);
-	callback->Execute(nullptr);
+	forward->PushCell(hndlResponse);
+	forward->PushCell(value);
+	forward->PushString(error);
+	forward->Execute(nullptr);
 
 	handlesys->FreeHandle(hndlResponse, &sec);
 	handlesys->FreeHandle(response.hndlData, &sec);
