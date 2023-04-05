@@ -19,7 +19,7 @@ for cxx in builder.targets:
     'src/httpformcontext.cpp',
     'src/http_natives.cpp',
     'src/json_natives.cpp',
-    'src/event_loop.cpp',
+    'src/websocket_eventloop.cpp',
     'src/websocket_connection.cpp',
     'src/websocket_connection_base.cpp',
     'src/websocket_connection_ssl.cpp',

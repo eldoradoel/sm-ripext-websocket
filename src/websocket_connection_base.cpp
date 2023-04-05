@@ -49,7 +49,7 @@ void websocket_connection_base::destroy()
     this->close();
 }
 
-bool websocket_connection_base::wsopen()
+bool websocket_connection_base::ws_open()
 {
-    return this->wsconnect;
+    return this->ws_connect;
 }

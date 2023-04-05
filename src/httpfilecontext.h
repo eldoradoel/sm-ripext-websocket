@@ -38,12 +38,6 @@ public: // IHTTPContext
 	bool InitCurl();
 	void OnCompleted();
 	void setProgressData(curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
-	IChangeableForward *getProgressForward() { return progressForward; };
-	bool getIsuplaod() { return isUpload; };
-	curl_off_t getdltotal() { return dltotal; };
-	curl_off_t getdlnow() { return dlnow; };
-	curl_off_t getultotal() { return ultotal; };
-	curl_off_t getulnow() { return ulnow; };
 
 private:
 	FILE *file = nullptr;

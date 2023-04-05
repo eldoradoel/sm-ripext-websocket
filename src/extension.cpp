@@ -23,7 +23,7 @@
 #include "httprequest.h"
 #include "queue.h"
 #include "websocket_connection_base.h"
-#include "event_loop.h"
+#include "websocket_eventloop.h"
 #include <atomic>
 
 // Limit the max processing request per tick

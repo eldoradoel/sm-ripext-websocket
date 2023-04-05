@@ -282,7 +282,7 @@ static cell_t native_SocketOpen(IPluginContext *p_context, const cell_t *params)
         return 0;
     }
 
-    return connection->socketopen();
+    return connection->socket_open();
 }
 
 static cell_t native_WsOpen(IPluginContext *p_context, const cell_t *params)
@@ -293,7 +293,7 @@ static cell_t native_WsOpen(IPluginContext *p_context, const cell_t *params)
         return 0;
     }
 
-    return connection->wsopen();
+    return connection->ws_open();
 }
 
 const sp_nativeinfo_t websocket_natives[] = {

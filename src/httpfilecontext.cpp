@@ -152,31 +152,26 @@ void HTTPFileContext::OnCompleted()
 	forward->Execute(nullptr);
 }
 
-void PushProgressInSourceModFrame(void *data)
-{
-	HTTPFileContext *context = (HTTPFileContext *)data;
-	if (context != nullptr && (context->getdltotal() != 0 || context->getultotal() != 0))
-	{
-		context->getProgressForward()->PushCell(context->getIsuplaod());
-		context->getProgressForward()->PushCell((cell_t)context->getdltotal());
-		context->getProgressForward()->PushCell((cell_t)context->getdlnow());
-		context->getProgressForward()->PushCell((cell_t)context->getultotal());
-		context->getProgressForward()->PushCell((cell_t)context->getulnow());
-		context->getProgressForward()->Execute(nullptr);
-	}
-}
-
 void HTTPFileContext::setProgressData(curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
 {
 	this->dltotal = dltotal;
 	this->dlnow = dlnow;
 	this->ultotal = ultotal;
 	this->ulnow = ulnow;
-	if (progressForward->GetFunctionCount() == 0)
+	if (dltotal != 0 || ultotal != 0)
 	{
-		return;
+		g_RipExt.Defer([this](){
+			if (this && this->progressForward && this->progressForward->GetFunctionCount() != 0)
+			{
+				this->progressForward->PushCell(this->isUpload);
+				this->progressForward->PushCell((cell_t)this->dltotal);
+				this->progressForward->PushCell((cell_t)this->dlnow);
+				this->progressForward->PushCell((cell_t)this->ultotal);
+				this->progressForward->PushCell((cell_t)this->ulnow);
+				this->progressForward->Execute(nullptr);
+			}
+		});
 	}
-	smutils->AddFrameAction(&PushProgressInSourceModFrame, (void *)this);
 }
 
 off_t FileSize(FILE *fd)

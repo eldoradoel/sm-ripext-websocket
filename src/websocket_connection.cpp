@@ -1,5 +1,5 @@
 #include "websocket_connection.h"
-#include "event_loop.h"
+#include "websocket_eventloop.h"
 #include <boost/asio/strand.hpp>
 
 websocket_connection::websocket_connection(std::string address, std::string endpoint, uint16_t port) : websocket_connection_base(address, endpoint, port)
@@ -28,7 +28,7 @@ void websocket_connection::on_resolve(beast::error_code ec, tcp::resolver::resul
         {
             this->disconnect_callback->operator()();
         }
-        this->wsconnect = false;
+        this->ws_connect = false;
         return;
     }
 
@@ -45,7 +45,7 @@ void websocket_connection::on_connect(beast::error_code ec, tcp::resolver::resul
         {
             this->disconnect_callback->operator()();
         }
-        this->wsconnect = false;
+        this->ws_connect = false;
         return;
     }
     beast::get_lowest_layer(*this->ws).expires_never();
@@ -67,7 +67,7 @@ void websocket_connection::on_handshake(beast::error_code ec)
         {
             this->disconnect_callback->operator()();
         }
-        this->wsconnect = false;
+        this->ws_connect = false;
         return;
     }
 
@@ -78,7 +78,7 @@ void websocket_connection::on_handshake(beast::error_code ec)
     }
 
     this->ws->async_read(this->buffer, beast::bind_front_handler(&websocket_connection::on_read, this));
-    this->wsconnect = true;
+    this->ws_connect = true;
     g_RipExt.LogMessage("On Handshaked %s:%d", address.c_str(), this->port);
 }
 
@@ -106,7 +106,7 @@ void websocket_connection::on_read(beast::error_code ec, size_t bytes_transferre
             {
                 this->disconnect_callback->operator()();
             }
-            this->wsconnect = false;
+            this->ws_connect = false;
         }
         return;
     }
@@ -133,7 +133,7 @@ void websocket_connection::on_close(beast::error_code ec)
             delete this;
         }
     }
-    this->wsconnect = false;
+    this->ws_connect = false;
 }
 
 void websocket_connection::write(boost::asio::const_buffer buffer)
@@ -146,7 +146,7 @@ void websocket_connection::close()
     this->ws->async_close(websocket::close_code::normal, beast::bind_front_handler(&websocket_connection::on_close, this));
 }
 
-bool websocket_connection::socketopen()
+bool websocket_connection::socket_open()
 {
     return this->ws->is_open();
 }
