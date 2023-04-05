@@ -161,7 +161,7 @@ void HTTPFileContext::setProgressData(curl_off_t dltotal, curl_off_t dlnow, curl
 	if (dltotal != 0 || ultotal != 0)
 	{
 		g_RipExt.Defer([this](){
-			if (this && this->progressForward && this->progressForward->GetFunctionCount() != 0)
+			if (this->progressForward && this->progressForward->GetFunctionCount() != 0)
 			{
 				this->progressForward->PushCell(this->isUpload);
 				this->progressForward->PushCell((cell_t)this->dltotal);
